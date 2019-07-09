@@ -1,0 +1,17 @@
+chartConfigs:
+  appdeploy:
+    chartValues:
+      values:
+        image:
+          repository: "bitsofinfo/hogapp"
+        containerPorts:
+          - name: nginx80
+            port: 80
+            service: true
+            ingress: true
+            tls: false
+          - name: nginx443
+            port: 443
+            service: true
+            ingress: true
+            tls: true

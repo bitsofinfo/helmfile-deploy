@@ -1,0 +1,173 @@
+appname: dogapp
+
+environments:
+  stage:
+
+    chartConfigs:
+      appdeploy:
+        chartValues:
+          values:
+            replicaCount: 1
+
+    contexts:
+      stage-qa:
+
+        services:
+          - name: "current"
+            version: "3.0.0"
+            installed: true
+          - name: "next"
+            version: "4.0.0"
+            installed: true
+          - name: "previous"
+            version: "2.0.0"
+            installed: true
+          - name: "old"
+            version: "1.0.0"
+            installed: false
+
+        ingress:
+
+          animals-mixed:
+            mappings:
+              - name: root
+                annotations:
+                  traefik.ingress.kubernetes.io/rule-type: Path
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "animals.mydomain.com"
+                paths:
+                  - "/"
+                serviceBindings:
+                  current: "40%"
+                  previous: "30%"
+                  next: "30%"
+
+              - name: paths
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "animals.mydomain.com"
+                paths:
+                  - "/blue"
+                  - "/green"
+                serviceBindings:
+                  current: "40%"
+                  previous: "30%"
+                  next: "30%"
+
+          animals-current:
+            mappings:
+              - name: root
+                annotations:
+                  traefik.ingress.kubernetes.io/rule-type: Path
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "animals-current.mydomain.com"
+                paths:
+                  - "/"
+                serviceBindings:
+                  current: "100%"
+              - name: paths
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "animals-current.mydomain.com"
+                paths:
+                  - "/blue"
+                  - "/green"
+                serviceBindings:
+                  current: "100%"
+
+          animals-previous:
+            mappings:
+              - name: root
+                annotations:
+                  traefik.ingress.kubernetes.io/rule-type: Path
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "animals-previous.mydomain.com"
+                paths:
+                  - "/"
+                serviceBindings:
+                  previous: "100%"
+              - name: paths
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "animals-previous.mydomain.com"
+                paths:
+                  - "/blue"
+                  - "/green"
+                serviceBindings:
+                  previous: "100%"
+
+          animals-next:
+            mappings:
+              - name: root
+                annotations:
+                  traefik.ingress.kubernetes.io/rule-type: Path
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "animals-next.mydomain.com"
+                paths:
+                  - "/"
+                serviceBindings:
+                  next: "100%"
+              - name: paths
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "animals-next.mydomain.com"
+                paths:
+                  - "/blue"
+                  - "/green"
+                serviceBindings:
+                  next: "100%"
+
+
+          mixed:
+            mappings:
+              - name: all
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "dogapp-mixed.mydomain.com"
+                serviceBindings:
+                  current: "40%"
+                  previous: "30%"
+                  next: "30%"
+
+          current:
+            mappings:
+              - name: all
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "dogapp-current.mydomain.com"
+                serviceBindings:
+                  current: "100%"
+
+          previous:
+            mappings:
+              - name: all
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "dogapp-previous.mydomain.com"
+                serviceBindings:
+                  previous: "100%"
+
+          next:
+            mappings:
+              - name: all
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "dogapp-next.mydomain.com"
+                serviceBindings:
+                  next: "100%"

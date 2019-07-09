@@ -1,0 +1,18 @@
+# IMPORTANT! The paths referenced here are relative
+# from the ROOT of this project where the main helmfile
+# lives (via. -f [helmfile.yaml]), NOT this directory...
+#
+# TODO: https://github.com/roboll/helmfile/issues/747
+
+{{ $environmentsDir := requiredEnv "HELMFILE_DEPLOY_ENVIRONMENTS_DIR" }}
+
+environments:
+  hogapp:
+    values:
+      - {{ $environmentsDir }}/hogapp/*
+  catapp:
+    values:
+      - {{ $environmentsDir }}/catapp/*
+  dogapp:
+    values:
+      - {{ $environmentsDir }}/dogapp/*

@@ -1,0 +1,203 @@
+values:
+  - values/000-globals.yaml
+  - values/001-clusters.yaml
+  - {{ requiredEnv "HELMFILE_DEPLOY_STATE_VALUES_DIR" }}/*
+---
+bases:
+  - {{ requiredEnv "HELMFILE_DEPLOY_ENVIRONMENTS_DIR" }}/index.yaml
+---
+bases:
+  - helmDefaults.yaml
+---
+
+
+releases:
+  {{- /*
+      ---------------------------------------------------------
+      Basic values declarations
+      ---------------------------------------------------------
+  */ -}}
+  {{- $envVals := .Environment.Values -}}
+  {{- $classifier := (hasKey $envVals "classifier") | ternary ($envVals | getOrNil "classifier") "" -}}
+  {{- $ports := (hasKey $envVals "ports") | ternary ($envVals | getOrNil "ports") (list (dict "port" 80 "tls" false)) }}
+  {{- $namespace := .Namespace -}}
+  {{- $stateVals := .Values }}
+
+  {{- /*
+      The target "cluster"
+  */ -}}
+  {{- $targetCluster := (pick $stateVals.clusters $stateVals.targetCluster) | values | first }}
+
+
+  {{- /*
+      ---------------------------------------------------------
+      For each [helmfile-environment].environments.[environment] loaded/found
+      in yaml files under environments/[helmfile-environment]/* we loop over
+      each environment's context one by one and generate a "appconduits"
+      helmfile "release" for it.
+      ---------------------------------------------------------
+  */ -}}
+  {{- range $currEnvironmentName,$currEnvironment := .Environment.Values.environments }}
+  {{- range $currContextName,$currContext := $currEnvironment.contexts }}
+
+
+  {{- /*
+      ---------------------------------------------------------
+      "chartConfigs"
+      ---------------------------------------------------------
+      Here we grab the "chartConfigs" from the following possible locations in order of priority:
+
+        1. The current "[helmfile-environment].environments.[environment].contexts.[context]" we are iterating over
+            i.e. this would be declared in environments/[helmfile-environment]/[any-env-file.yaml]
+
+        2. The current "[helmfile-environment].environments.[environment]" we are iterating over
+            i.e. this would be declared in environments/[helmfile-environment]/[any-env-file.yaml]
+
+        3. The top level helmfile-environment's "chartConfigs"
+            i.e. this would be declared in environments/[helmfile-environment]/chartconfigs.yaml
+
+        4. The global state values "chartConfigs"
+            i.e. this would be declard in: values/globals.yaml
+
+        5. Note with the sprig "merge" function: see oddities: https://github.com/Masterminds/sprig/issues/120
+
+  */ -}}
+  {{ $chartConfigs := dict }}
+  {{ $chartConfigs := hasKey $stateVals "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($stateVals | getOrNil "chartConfigs")) $chartConfigs }}
+  {{ $chartConfigs := hasKey $envVals "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($envVals | getOrNil "chartConfigs")) $chartConfigs }}
+  {{ $chartConfigs := hasKey $currEnvironment "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($currEnvironment | getOrNil "chartConfigs")) $chartConfigs }}
+  {{ $chartConfigs := hasKey $currContext "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($currContext | getOrNil "chartConfigs")) $chartConfigs }}
+
+
+  {{- /*
+      ---------------------------------------------------------
+      Generate a "conduitName" for each release
+
+      [envVals.appname]-[currContextName][-[classifier]]
+      ---------------------------------------------------------
+  */ -}}
+  {{- $conduitName := printf "%s-%s-%sREMOVEME-conduits" $envVals.appname $currContextName $classifier }}
+
+  {{- /*
+  this is annoying, due to lack of reliable ternary operators and nested IF garbage
+   in golang conditionals and variable scope, we have no scratch like key-resolver...
+   helm uses http://masterminds.github.io/sprig under the covers nicely.
+  */ -}}
+  {{- $conduitName := $conduitName | replace "-REMOVEME" "" }}
+  {{- $conduitName := $conduitName | replace "REMOVEME" "" }}
+  {{- $conduitName := $conduitName | replace "-%!s(<nil>)" "" }}
+
+
+
+  {{- /*
+      ---------------------------------------------------------
+      Helmfile RELEASE generation:
+
+      Generate an actual helmfile release of the "appconduits" chart
+      for the currentEnvironment.currentContext
+      with its desired state expressed in helm values
+      ---------------------------------------------------------
+  */ -}}
+  - name: {{ $conduitName }}
+    labels:
+      app: {{ $envVals.appname }}
+      context: {{ $currContextName }}
+    namespace: {{ $namespace }}
+    chart: {{ $chartConfigs.appconduits.chart }}
+    {{ if hasKey $chartConfigs.appconduits "version" }}
+    version: {{ $chartConfigs.appconduits.version }}
+    {{ end }}
+    values:
+
+      {{- /*
+          ---------------------------------------------------------
+          BASE values file references
+          ---------------------------------------------------------
+      */ -}}
+      {{ range $valueBase := $chartConfigs.appconduits.chartValues.baseValues }}
+      - {{ $chartConfigs.appconduits.chartValues.baseValuesRootDir }}/values/{{$valueBase}}/values.yaml
+      {{ end }}
+
+
+      {{/*
+          ---------------------------------------------------------
+          Inline custom values
+
+          These values, combined with the "bases" above yield
+          the overall set of "values" customizations passed to helm
+          ---------------------------------------------------------
+      */ -}}
+      - conduitname: "{{ $envVals.appname }}"
+        classifier: "{{ $classifier }}"
+        conduits:
+          contexts:
+            {{ $currContextName }}:
+              services:
+                {{- range $service := $currContext.services }}
+                  {{- range $port := $ports }}
+                    {{- $serviceName := printf "REMOVEME%s-%s-%d" $classifier $service.name $port.port }}
+                    {{- $serviceName := $serviceName | replace "REMOVEME-" "" }}
+                    {{- $serviceName := $serviceName | replace "REMOVEME" "" }}
+                    {{- $serviceName := $serviceName | replace "%!s(<nil>)-" "" }}
+                {{ $serviceName }}:
+                  port: {{ $port.port }}
+                  targetPort: {{ $port.port }}
+                  tls: {{ $port.tls }}
+                  selector:
+                    "{{$stateVals.releaseConfigs.conduits.selectorlabelNames.appName}}": "{{ $envVals.appname }}"
+                    "{{$stateVals.releaseConfigs.conduits.selectorlabelNames.appVersion}}": "{{ $service.version }}"
+                    {{ if $classifier }}
+                    "{{$stateVals.releaseConfigs.conduits.selectorlabelNames.appClassifier}}": {{ $classifier }}
+                    {{ end }}
+                  {{ end }}
+                {{ end }}
+
+              ingress:
+                {{ range $ingressName, $ingress := $currContext.ingress }}
+                  {{- range $port := $ports }}
+                    {{ $ingressName := printf "%s-%sREMOVEME-%d" $ingressName $classifier $port.port }}
+                    {{- $ingressName := $ingressName | replace "-REMOVEME" "" }}
+                    {{- $ingressName := $ingressName | replace "REMOVEME" "" }}
+                    {{- $ingressName := $ingressName | replace "-%!s(<nil>)" "" }}
+
+                {{ $ingressName }}:
+                  mappings:
+                    {{ range $mapping := $ingress.mappings }}
+                    - name: {{ $mapping.name }}
+                      {{ if hasKey $mapping "annotations" }}
+                      annotations:
+                        {{ range $annotation,$val := $mapping.annotations }}
+                        {{ $annotation }}: {{ $val }}
+                        {{ end }}
+                      {{ end }}
+                      labels:
+                      {{ range $label, $value := $mapping.labels }}
+                        {{ $label }}: "{{ $value }}"
+                      {{ end }}
+                      hosts:
+                        {{ range $host := $mapping.hosts }}
+                          {{- $hostName := $host.name | replace "[[#port]]" ($port.port | toString) -}}
+                          {{- $hostName := $hostName | replace "-." "." -}}
+                        - name: "{{ $hostName }}"
+                          dns: {{ (eq ((getOrNil "dns" $host) | toString) "false") | ternary false true }}
+                        {{ end }}
+                      {{ if hasKey $mapping "paths" }}
+                      paths:
+                        {{ range $path := $mapping.paths }}
+                        - "{{ $path }}"
+                        {{ end }}
+                      {{ end }}
+                      serviceBindings:
+                        {{ range $serviceName,$percentage := $mapping.serviceBindings }}
+                          {{- $serviceName := printf "REMOVEME%s-%s-%d" $classifier $serviceName $port.port }}
+                          {{- $serviceName := $serviceName | replace "REMOVEME-" "" }}
+                          {{- $serviceName := $serviceName | replace "REMOVEME" "" }}
+                          {{- $serviceName := $serviceName | replace "%!s(<nil>)-" "" }}
+                        {{ $serviceName }}: "{{ $percentage }}"
+                        {{ end }}
+                      {{ end }}
+                    {{ end }}
+                {{ end }}
+
+  {{ end }}
+  {{ end }}

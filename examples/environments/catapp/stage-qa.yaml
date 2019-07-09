@@ -1,0 +1,126 @@
+appname: catapp
+
+environments:
+  stage:
+
+    chartConfigs:
+      appdeploy:
+        chartValues:
+          values:
+            replicaCount: 1
+
+    contexts:
+      stage-qa:
+
+        services:
+          - name: "current"
+            version: "3.0.0"
+            installed: true
+          - name: "next"
+            version: "4.0.0"
+            installed: true
+          - name: "previous"
+            version: "2.0.0"
+            installed: true
+          - name: "old"
+            version: "1.0.0"
+            installed: false
+
+        ingress:
+
+
+          animals-mixed:
+            mappings:
+              - name: paths
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "animals.mydomain.com"
+                paths:
+                  - "/orange"
+                  - "/red"
+                serviceBindings:
+                  current: "40%"
+                  previous: "30%"
+                  next: "30%"
+
+          animals-current:
+            mappings:
+              - name: paths
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "animals-current.mydomain.com"
+                paths:
+                  - "/orange"
+                  - "/red"
+                serviceBindings:
+                  current: "100%"
+
+          animals-previous:
+            mappings:
+              - name: paths
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "animals-previous.mydomain.com"
+                paths:
+                  - "/orange"
+                  - "/red"
+                serviceBindings:
+                  previous: "100%"
+
+          animals-next:
+            mappings:
+              - name: paths
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "animals-next.mydomain.com"
+                paths:
+                  - "/orange"
+                  - "/red"
+                serviceBindings:
+                  next: "100%"
+
+          mixed:
+            mappings:
+              - name: all
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "catapp-mixed.mydomain.com"
+                serviceBindings:
+                  current: "40%"
+                  previous: "30%"
+                  next: "30%"
+
+          current:
+            mappings:
+              - name: all
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "catapp-current.mydomain.com"
+                serviceBindings:
+                  current: "100%"
+
+          previous:
+            mappings:
+              - name: all
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "catapp-previous.mydomain.com"
+                serviceBindings:
+                  previous: "100%"
+
+          next:
+            mappings:
+              - name: all
+                labels:
+                  bitsofinfo-ingress: "yes"
+                hosts:
+                  - name: "catapp-next.mydomain.com"
+                serviceBindings:
+                  next: "100%"

@@ -1,0 +1,49 @@
+# Customized values for appdeploy chart
+
+app:
+  environment: "stage"
+  context: "stage-qa"
+
+containerPorts:
+  - name: nginx80
+    port: 80
+    service: true
+    ingress: true
+    tls: false
+
+healthcheck:
+  liveness:
+    containerPort: 80
+    path: /
+    scheme: HTTP
+  readiness:
+    containerPort: 80
+    path: /
+    scheme: HTTP
+
+hooks:
+  default:
+    postInstallUpgrade:
+      validator:
+        useIngressHost: false
+        checksConfig:
+          - name: "/"
+            path: /
+            method: GET
+            timeout: 5
+            retries: 15
+            tags: ["80"]
+    postDelete:
+      validator:
+        useIngressHost: false
+
+ingress:
+  metadata:
+    annotations:
+      - name: "kubernetes.io/ingress.class"
+        value: "traefik"
+    dns:
+      fqdnSuffix: ".local"
+    labels:
+      - name: "bitsofinfo-ingress"
+        value: "yes"

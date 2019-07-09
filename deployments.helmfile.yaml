@@ -1,0 +1,289 @@
+values:
+  - values/000-globals.yaml
+  - values/001-clusters.yaml
+  - {{ requiredEnv "HELMFILE_DEPLOY_STATE_VALUES_DIR" }}/*
+---
+bases:
+  - {{ requiredEnv "HELMFILE_DEPLOY_ENVIRONMENTS_DIR" }}/index.yaml
+---
+bases:
+  - helmDefaults.yaml
+---
+
+
+releases:
+  {{- /*
+      ---------------------------------------------------------
+      Basic values declarations
+      ---------------------------------------------------------
+  */ -}}
+  {{- $stateVals := .Values }}
+  {{- $envVals := .Environment.Values -}}
+  {{- $namespace := .Namespace -}}
+
+  {{- /*
+      The target "cluster"
+  */ -}}
+  {{- $targetCluster := (pick $stateVals.clusters $stateVals.targetCluster) | values | first }}
+
+
+  {{- /*
+      ---------------------------------------------------------
+      These two values are fetched from the helmfile "state values"
+      and are typically set via invocation:
+        "--state-values-set bootstrapSecret=x,creatorId=y"
+      ---------------------------------------------------------
+  */ -}}
+  {{ $bootstrapSecretValue := $stateVals | getOrNil "bootstrapSecret" }}
+  {{ $creatorId := $stateVals | getOrNil "creatorId"  }}
+
+  {{- /*
+      ---------------------------------------------------------
+      For each [helmfile-environment].environments.[environment] loaded/found
+      in yaml files under environments/[helmfile-environment]/* we loop over
+      each environment's context(s) declared "services", one by one
+      and generate a "appdeploy" helmfile "release"
+      ---------------------------------------------------------
+  */ -}}
+  {{- range $currEnvironmentName,$currEnvironment := $envVals.environments }}
+  {{- range $currContextName,$currContext := $currEnvironment.contexts }}
+  {{- range $currService := $currContext.services }}
+
+  {{- /*
+      Used by `tpl` variable parsing below. The caller can specify tpl parsed values i.e.
+        "{{ .helmfile.[path] }}" If ".helmfile" is NOT present the "{{bracketed}}" will
+      be left alone and assumed to be consumable by the chart in the release
+  */ -}}
+  {{- $helmfileVarsDict := dict "helmfile" (dict "targetCluster" $targetCluster "envVals" $envVals "stateVals" $stateVals "namespace" $namespace "service" $currService "context" $currContext "environment" $currEnvironment) }}
+
+  {{- /*
+      ---------------------------------------------------------
+      "chartConfigs"
+      ---------------------------------------------------------
+      Here we grab the "chartConfigs" from the following possible locations in order of priority:
+
+        1. The current "[helmfile-environment].environments.[environment].contexts.[context].services.[service]" we are iterating over
+            i.e. this would be declared in environments/[helmfile-environment]/[any-env-file.yaml]
+
+        2. The current "[helmfile-environment].environments.[environment].contexts.[context]" we are iterating over
+            i.e. this would be declared in environments/[helmfile-environment]/[any-env-file.yaml]
+
+        3. The current "[helmfile-environment].environments.[environment]" we are iterating over
+            i.e. this would be declared in environments/[helmfile-environment]/[any-env-file.yaml]
+
+        4. The top level helmfile-environment's "chartConfigs"
+            i.e. this would be declared in environments/[helmfile-environment]/chartconfigs.yaml
+
+        5. The global state values "chartConfigs"
+            i.e. this would be declard in: values/globals.yaml
+
+        6. Note with the sprig "merge" function: see oddities: https://github.com/Masterminds/sprig/issues/120
+
+  */ -}}
+  {{ $chartConfigs := dict }}
+  {{ $chartConfigs := hasKey $stateVals "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($stateVals | getOrNil "chartConfigs")) $chartConfigs }}
+  {{ $chartConfigs := hasKey $envVals "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($envVals | getOrNil "chartConfigs")) $chartConfigs }}
+  {{ $chartConfigs := hasKey $currEnvironment "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($currEnvironment | getOrNil "chartConfigs")) $chartConfigs }}
+  {{ $chartConfigs := hasKey $currContext "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($currContext | getOrNil "chartConfigs")) $chartConfigs }}
+  {{ $chartConfigs := hasKey $currService "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($currService | getOrNil "chartConfigs")) $chartConfigs }}
+
+  {{- /*
+      ---------------------------------------------------------
+      Generate a "releaseIdentifier"
+
+      [envVals.appname]-[environment.context]-[currEnvironment.service.version]-[envVals.classifier]
+      ---------------------------------------------------------
+  */ -}}
+  {{- $releaseIdentifier := printf "%s-%s-%s-%s" $envVals.appname $currContextName ($currService.version | replace "." "-") (hasKey $envVals "classifier" | ternary ($envVals | getOrNil "classifier") "NOCLASSIFIER") }}
+  {{- $releaseIdentifier := $releaseIdentifier | replace "-NOCLASSIFIER" "" -}}
+  {{- $releaseIdentifier := $releaseIdentifier | replace "NOCLASSIFIER" "" -}}
+  {{- $releaseIdentifier := $releaseIdentifier | replace "-%!s(<nil>)" "" }}
+
+
+  {{- /*
+      ---------------------------------------------------------
+      Build BASE values file references -> $valuesFiles
+
+      The "chartConfigs.appdeploy" chart configuration can declare one or more "base"
+      locations for supplemental "values.yaml" files. Here we list each one located
+      within the configured "chartConfigs.appdeploy.chartValues.baseValuesRootDir" path
+      ---------------------------------------------------------
+  */ -}}
+  {{ $valuesFiles := dict "files" list }}
+
+  {{ range $valueBase := $chartConfigs.appdeploy.chartValues.baseValues }}
+    {{ $_ := append $valuesFiles.files (printf "%s/values/%s/values.yaml" $chartConfigs.appdeploy.chartValues.baseValuesRootDir $valueBase) | set $valuesFiles "files" }}
+  {{ end }}
+
+  {{- /*
+      Each "service" can declare a "hooks" object, each top-level "key" of it
+      designates the name of the hook and it's values folder within the
+      "chartConfigs.appdeploy.chartValues.baseValuesRootDir" location
+      for supplemental values particular to that hook.
+  */ -}}
+  {{ if hasKey $currService "hooks"}}
+    {{ range $currHookName,$currHook := $currService.hooks }}
+      {{ $_ := append $valuesFiles.files (printf "%s/values/hooks/%s/values.yaml" $chartConfigs.appdeploy.chartValues.baseValuesRootDir $currHookName) | set $valuesFiles "files" }}
+    {{ end }}
+  {{ end }}
+
+
+  {{- /*
+      ---------------------------------------------------------
+      Helmfile RELEASE generation:
+
+      Generate an actual helmfile release of the "appdeploy" chart
+      for the currentEnvironment.currentContext.currService
+      with its desired state expressed in helm values
+      ---------------------------------------------------------
+  */ -}}
+  - name: {{ $releaseIdentifier }}
+    labels:
+      app: {{ $envVals.appname }}
+      context: {{ $currContextName }}
+    namespace: {{ $namespace }}
+    chart: {{ $chartConfigs.appdeploy.chart }}
+    {{ if hasKey $chartConfigs.appdeploy "version" }}
+    version: {{ $chartConfigs.appdeploy.version }}
+    {{ end }}
+
+    {{ if $currService.installed }}
+    installed: true
+    {{ else }}
+    installed: false
+    {{ end }}
+
+    values:
+      {{- /*
+          ---------------------------------------------------------
+          RENDER: BASE values file references
+          ---------------------------------------------------------
+      */ -}}
+      {{- range $valueFile := $valuesFiles.files }}
+      - {{$valueFile}}
+      {{ end }}
+
+      {{/*
+          ---------------------------------------------------------
+          Inline custom values
+
+          These values, combined with the "bases" above yield
+          the overall set of "values" customizations passed to helm
+          ---------------------------------------------------------
+      */ -}}
+      - app:
+          name: {{ $envVals.appname }}
+          context: {{ $currContextName }}
+          environment: {{ $currEnvironmentName }}
+          {{ if $envVals | getOrNil "classifier" }}
+          classifier: {{ $envVals.classifier }}
+          {{ end }}
+
+        creatorId: {{ $creatorId }}
+        replicaCount: {{ $chartConfigs.appdeploy.chartValues.values.replicaCount }}
+
+        image:
+          repository: {{ $chartConfigs.appdeploy.chartValues.values.image.repository }}
+          tag: "{{ $currService.version }}"
+
+        {{ if hasKey $chartConfigs.appdeploy.chartValues.values "ingress" }}
+        ingress:
+{{ toYaml $chartConfigs.appdeploy.chartValues.values.ingress | indent 12 }}
+        {{ end }}
+
+        {{ if hasKey $chartConfigs.appdeploy.chartValues.values "healthcheck" }}
+        healthcheck:
+{{ toYaml $chartConfigs.appdeploy.chartValues.values.healthcheck | indent 12 }}
+        {{ end }}
+
+        bootstrapSecret:
+          k8Secret:
+            secretValue: "{{ $bootstrapSecretValue }}"
+
+        {{- if $chartConfigs.appdeploy.chartValues.values | getOrNil "env" }}
+        env:
+          {{- range $key,$val := $chartConfigs.appdeploy.chartValues.values.env }}
+            {{- if and (hasKey $val "value") $val.value }}
+          {{ $key }}:
+              {{ if contains ".helmfile" $val.value }}
+            value: {{ tpl $val.value $helmfileVarsDict }}
+              {{ else }}
+            value: {{ $val.value }}
+              {{ end }}
+            {{ else }}
+          {{ $key }}:
+            value: ""
+            {{ end }}
+          {{ end }}
+        {{ end }}
+
+        {{ if or (hasKey $chartConfigs.appdeploy.chartValues.values "hooks") (hasKey $currService "hooks") }}
+        hooks:
+
+          {{- /*
+              STANDARD hooks
+
+              Dump out all non-custom appdeploy "hooks" defined in "chartConfigs" blocks
+          */ -}}
+          {{ if (hasKey $chartConfigs.appdeploy.chartValues.values "hooks") }}
+{{ toYaml $chartConfigs.appdeploy.chartValues.values.hooks | indent 12 }}
+          {{ end }}
+
+          {{- /*
+            CUSTOM Hooks:
+
+            Each "service" can declare a "hooks" object, each top-level "key" of it
+            designates the name of the hook and and its "values:" which are consumed
+            here and nested under "hooks.custom"
+
+          */ -}}
+          {{ if hasKey $currService "hooks"}}
+          custom:
+            {{ range $currHookName,$currHook := $currService.hooks }}
+
+            {{ $currHookName }}:
+              enabled: {{ $currHook.values.enabled }}
+
+              variables:
+                {{ range $name,$value := $currHook.values.variables }}
+                  {{ if contains ".helmfile" $value }}
+                {{ $name }}: {{ tpl $value $helmfileVarsDict }}
+                 {{ else }}
+                {{ $name }}: {{ $value }}
+                  {{ end }}
+                {{ end }}
+
+              {{- /*
+                  ---------------------------------------------------------
+                  Each custom hook's optional "bootstrapSecret" value
+                  can be specified on helmfile invocation like:
+                    "--state-values-set hooks.custom.[hookname].bootstrapSecret=x"
+                  Note that "x" will be passed for 'tpl' parsing so it can
+                  reference another variable in the $helmfileVarsDict
+                  ---------------------------------------------------------
+              */}}
+              bootstrapSecret:
+                k8Secret:
+                  {{- if ($stateVals | getOrNil "hooks.custom") }}
+                    {{- $stateValsCurrHook := $stateVals.hooks.custom | getOrNil $currHookName }}
+                    {{ if $stateValsCurrHook }}
+                      {{ if contains ".helmfile" $stateValsCurrHook.bootstrapSecret }}
+                  secretValue: {{ tpl $stateValsCurrHook.bootstrapSecret $helmfileVarsDict }}
+                      {{ else }}
+                  secretValue: {{ $stateValsCurrHook.bootstrapSecret }}
+                      {{ end }}
+                    {{ else }}
+                  secretValue: "NO_SECRET_VALUE"
+                    {{ end }}
+                  {{ else }}
+                  secretValue: "NO_SECRET_VALUE"
+                  {{ end }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+
+
+
+  {{ end }}    {{- /* END: range $currService := $currContext.services */ -}}
+  {{ end }}   {{- /* END: range $currContextName,$currContext := $currEnvironment.contexts */ -}}
+  {{ end }}   {{- /* END: range $currEnvironmentName,$currEnvironment := $envVals.environments */ -}}

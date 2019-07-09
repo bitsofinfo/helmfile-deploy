@@ -1,0 +1,6 @@
+chartConfigs:
+  appdeploy:
+    chartValues:
+      values:
+        image:
+          repository: "bitsofinfo/catapp"

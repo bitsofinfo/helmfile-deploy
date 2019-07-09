@@ -1,0 +1,33 @@
+#----------------------------------------------------------------------------
+# Clusters:
+# Here we define named "clusters"
+#
+# You can declare your own by adding addition *.yaml files
+# within the HELMFILE_DEPLOY_STATE_VALUES_DIR
+#
+# The values within each "named" cluster are open-ended, meaning you
+# can define additional custom variables and then reference them in
+# your helmfile "environment" yaml files. The variables declared below
+# however at a minimum are required and serve as the minimum schema required.
+#
+# Note you can reference variables here in helmfile release templates via:
+#
+# {{ .helmfile.stateVals.clusters.[something]... }}
+#  OR
+# {{ .helmfile.targetCluster.[something]... }}
+#   where "targetCluster" is the targetCluster specified
+#   via "--state-values-set targetCluster=[CLUSTERNAME]"
+#-----------------------------------------------------------------------------
+
+clusters:
+
+  minikube:
+
+    # Required vars to exist per "cluster"
+    name: minikube
+    helmDefaults:
+      tillerNamespace: kube-system
+      kubeContext: minikube
+      wait: true
+
+  

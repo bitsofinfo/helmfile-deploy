@@ -1,0 +1,95 @@
+#------------------------------------------------------------------------------
+# Default settings for the charts that helmfile-deploy generates releases for:
+#   - i.e. the bitsofinfo/appdeploy and bitsofinfo/appconduits charts
+#
+# These global defaults can be overriden in the following ways
+# (all or a portion thereof)
+#
+# a) Re-declare in your own custom yaml files by adding additional *.yaml files
+#    within the HELMFILE_DEPLOY_STATE_VALUES_DIR
+#
+# b) per helmfile "environment" YAML file. I.E. these could be declared in any
+#    [HELMFILE_DEPLOY_ENVIRONMENTS_DIR]/[helmfile-environment]/[any-env-file.yaml]
+#    - at the root level (i.e. just: chartConfigs)
+#    - at the environments.[environmentName].chartConfigs level
+#    - at the environments.[environmentName].contexts.[contextName] level
+#    - at the environments.[environmentName].contexts.[contextName].services.[serviceName] level
+#------------------------------------------------------------------------------
+
+chartConfigs:
+
+  appconduits:
+    chart: bitsofinfo-appconduits/appconduits
+    version: 1.0.8
+    #
+    # Further chart values customization:
+    #
+    # WTF is a "baseValuesRootDir"? Each helmfile environment can declare its own
+    # customization of "chartConfigs" at various levels such as the below to
+    # declare sets of default values to apply to each release using this chart.
+    #
+    # EXAMPLE:
+    # For the below configuration the conduits.helmfile.yaml would expect
+    # the following values.yaml files to exist:
+    #
+    # - ../myAppConduitsValues/values/defaults/values.yaml
+    # - ../myAppConduitsValues/values/app1/values.yaml
+    # - ../myAppConduitsValues/values/misc/values.yaml
+    #---------------
+    #chartValues:
+    #  baseValuesRootDir: "../myAppConduitsValues"
+    #  baseValues:
+    #    - defaults
+    #    - app1
+    #    - misc
+    #
+    # You should specify the above in another custom values YAML in this same
+    # directory OR via the helmfile command line directly such as:
+    #
+    # --state-values-set \
+    #     chartConfigs.appconduits.chartValues.baseValuesRootDir=[relative path to baseValues root dir]
+    #
+
+
+  appdeploy:
+    chart: bitsofinfo-appdeploy/appdeploy
+    version: 1.1.4
+    #
+    # Further chart values customization:
+    #
+    # WTF is a "baseValuesRootDir"? Each helmfile environment can declare its own
+    # customization of "chartConfigs" at various levels such as the below to
+    # declare sets of default values to apply to each release using this chart.
+    #
+    # EXAMPLE:
+    # For the below configuration the deployments.helmfile.yaml would expect
+    # the following values.yaml files to exist:
+    #
+    # - ../myAppDeployValues/values/defaults/values.yaml
+    # - ../myAppDeployValues/values/app1/values.yaml
+    # - ../myAppDeployValues/values/misc/values.yaml
+    #---------------
+    #chartValues:
+    #  baseValuesRootDir: "../myAppDeployValues"
+    #  baseValues:
+    #    - defaults
+    #    - app1
+    #    - misc
+    #
+    # You should specify the above in another custom values YAML in this same
+    # directory OR via the helmfile command line directly such as:
+    #
+    # --state-values-set \
+    #     chartConfigs.appdeploy.chartValues.baseValuesRootDir=[relative path to baseValues root dir]
+    #
+
+
+
+releaseConfigs:
+  conduits:
+    # The "service" selector label "names" (i.e. keys) for standard
+    # selector labels generated for all "appconduits" helmfile releases
+    selectorlabelNames:
+      appName: "app-name"
+      appVersion: "app-version"
+      appClassifier: "app-classifier"

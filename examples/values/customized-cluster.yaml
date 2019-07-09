@@ -1,0 +1,11 @@
+clusters:
+
+  minikube:
+
+    # Here we supplement some info:
+    ingressControllers:
+
+      # assumes you have an ingress controller installed such as:
+      # https://github.com/bitsofinfo/appdeploy/blob/master/examples/TRAEFIK_SETUP.md
+      default:
+        url: "https://bitsofinfo-traefik.test.local"
