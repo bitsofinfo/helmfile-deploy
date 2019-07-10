@@ -1,1 +1,3 @@
 helmfile
+custom-configs/*
+!custom-configs/README.md
