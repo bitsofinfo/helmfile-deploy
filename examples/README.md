@@ -26,17 +26,25 @@ clusters:
 ```
 * For all commands below alter the argument `--state-values-set targetCluster=<MYCLUSTERNAME>`
 
+### Helm and Helmfile
+
 You **MUST** have `helm` installed.
 
 You **MUST** have `helmfile` installed: https://github.com/roboll/helmfile and be using a version **>= 0.79.4**
 
+### yq
+
 You should install `yq` https://github.com/kislyuk/yq (`brew install python-yq`) *(needed for examples only)*
 
-**IMPORTANT!:**
+### Ingress Controller
+
 Before we continue, you need to setup an `IngressController` [lets use Traefik, click here for setup instructions](https://github.com/bitsofinfo/appdeploy/blob/master/examples/TRAEFIK_SETUP.md)
+
+### /etc/hosts
 
 For this example: your `/etc/hosts` (unless you have DNS setup) should have an entry with the contents of [hosts.txt](https://github.com/bitsofinfo/appconduits/blob/master/examples/hosts.txt) (you need to customized w/ your LB IP..)
 
+### Helm repositories
 Finally, ensure the following Helm repos exists on your machine:
 ```
 helm repo add bitsofinfo-appdeploy https://raw.githubusercontent.com/bitsofinfo/appdeploy/master/repo
