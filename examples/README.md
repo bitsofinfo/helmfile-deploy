@@ -54,7 +54,7 @@ helm repo update
 
 ## First steps
 
-We need to declare some ENVIRONMENT variables defining configuration locations for `helmfile-deploy`
+We need to declare some ENVIRONMENT variables defining configuration locations for `helmfile-deploy`. Note that currently these locations must be `RELATIVE` from the root of the `helmfile-deploy` project 
 
 ### HELMFILE_DEPLOY_STATE_VALUES_DIR
 This variable designates where your custom `helmfile` *state values* can be found. Within this directory you can have one or more custom `*.yaml` that override and customize known `helmfile-deploy` state values defined in [values/](../values) Its important to note that these values are not `helm` chart values, but rather values that are consumed by the helmfile release templates themselves ([deployments.helmfile.yaml](../deployments.helmfile.yaml) & [conduits.helmfile.yaml](../conduits.helmfile.yaml))
