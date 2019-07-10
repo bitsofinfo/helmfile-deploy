@@ -42,7 +42,7 @@ Before we continue, you need to setup an `IngressController` [lets use Traefik, 
 
 ### /etc/hosts
 
-For this example: your `/etc/hosts` (unless you have DNS setup) should have an entry with the contents of [hosts.txt](https://github.com/bitsofinfo/appconduits/blob/master/examples/hosts.txt) (you need to customized w/ your LB IP..)
+For this example: your `/etc/hosts` (unless you have DNS setup) [should have an entry with the contents of this: hosts.txt](https://github.com/bitsofinfo/appconduits/blob/master/examples/hosts.txt) (you need to customize w/ your LB IP..)
 
 ### Helm repositories
 Finally, ensure the following Helm repos exists on your machine:
