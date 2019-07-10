@@ -10,6 +10,8 @@ You **MUST** have `helm` installed.
 
 You **MUST** have `helmfile` installed: https://github.com/roboll/helmfile and be using a version **>= 0.79.4**
 
+You should install `yq` https://github.com/kislyuk/yq (`brew install python-yq`) (needed for examples only)
+
 **IMPORTANT!:**
 Before we continue we need to setup an `IngressController` [lets use Traefik, click here for setup instructions](https://github.com/bitsofinfo/appdeploy/blob/master/examples/TRAEFIK_SETUP.md)
 
@@ -24,12 +26,12 @@ helm repo update
 
 ## First: we need to declare some locations for `helmfile-deploy`
 
-This variable designates where your custom `helmfile` *state values* can be found. Within this directory you can have one or more custom `*.yaml` that override and customize known `helmfile-deploy` state values defined in [values/](../values) Its important to note that these values are not `helm` chart values, but rather values that are consumed by the helmfile release templates themselves.
+This variable designates where your custom `helmfile` *state values* can be found. Within this directory you can have one or more custom `*.yaml` that override and customize known `helmfile-deploy` state values defined in [values/](../values) Its important to note that these values are not `helm` chart values, but rather values that are consumed by the helmfile release templates themselves ([deployments.helmfile.yaml](../deployments.helmfile.yaml) & [conduits.helmfile.yaml](../conduits.helmfile.yaml))
 ```
 export HELMFILE_DEPLOY_STATE_VALUES_DIR=examples/values
 ```
 
-This variable designates where your custom `helmfile` *environments* found. This directory should declare a single `index.yaml` that declares your helmfile `environments:` block. For the purposes of the `helmfile-deploy` framework, each helmfile *environment* represents a target application that can be deployed.
+This variable designates where your custom `helmfile` *environments* can be found. This directory should declare a single `index.yaml` that declares your helmfile `environments:` block. For the purposes of the `helmfile-deploy` framework, each helmfile *environment* represents a target application that can be deployed.
 ```
 export HELMFILE_DEPLOY_ENVIRONMENTS_DIR=examples/environments
 ```
@@ -59,6 +61,29 @@ curl http://catapp-stage-qa-3-0-0-80.local
 curl http://catapp-stage-qa-4-0-0-80.local
 ```
 
+Lets verify that the custom `env` var `INGRESS_CONTROLLER_URL` declared under [environments/catapp/chartconfigs.yaml](environments/catapp/chartconfigs.yaml) actually got replaced w/ the helmfile state value based on the `targetCluster` (minikube) specified above in the `--state-values-set targetCluster=minikube` argument
+
+```
+kubectl describe deployment catapp-stage-qa-2-0-0 -n bitsofinfo-apps | grep INGRESS
+```
+
+You should see `INGRESS_CONTROLLER_URL:  https://bitsofinfo-traefik.test.local`
+
+### So... how can I just see what will be generated?
+
+```
+./helmfile \
+  --file deployments.helmfile.yaml \
+  --state-values-set targetCluster=minikube \
+  --namespace bitsofinfo-apps \
+  --selector context=stage-qa \
+  --environment catapp \
+  --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=examples/chartvalues/appdeploy \
+  --quiet \
+  template | yq --yaml-output .
+```
+
+Great. Let's move on.
 
 ## Lets deploy all defined "conduits" for "catapp"
 
@@ -213,3 +238,75 @@ Ensure all *dogapp* conduit releases:
 |GREEN dogapp:3.0.0|`curl http://animals-current.mydomain.com/green`|
 |BLUE dogapp:2.0.0|`curl http://animals-previous.mydomain.com/blue`|
 |GREEN dogapp:2.0.0|`curl http://animals-previous.mydomain.com/green`|
+
+
+## Cleanup
+
+Cleanup `catapp` releases:
+```
+./helmfile \
+  --log-level debug \
+  --file deployments.helmfile.yaml \
+  --state-values-set targetCluster=minikube \
+  --namespace bitsofinfo-apps \
+  --selector context=stage-qa \
+  --environment catapp \
+  --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=examples/chartvalues/appdeploy \
+  destroy &
+
+./helmfile \
+  --log-level debug \
+  --file conduits.helmfile.yaml \
+  --state-values-set targetCluster=minikube \
+  --namespace bitsofinfo-apps \
+  --selector context=stage-qa \
+  --environment catapp \
+  --state-values-set chartConfigs.appconduits.chartValues.baseValuesRootDir=examples/chartvalues/appconduits \
+  destroy &
+```
+
+Cleanup `dogapp` releases:
+```
+./helmfile \
+  --log-level debug \
+  --file deployments.helmfile.yaml \
+  --state-values-set targetCluster=minikube \
+  --namespace bitsofinfo-apps \
+  --selector context=stage-qa \
+  --environment dogapp \
+  --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=examples/chartvalues/appdeploy \
+  destroy &
+
+./helmfile \
+  --log-level debug \
+  --file conduits.helmfile.yaml \
+  --state-values-set targetCluster=minikube \
+  --namespace bitsofinfo-apps \
+  --selector context=stage-qa \
+  --environment dogapp \
+  --state-values-set chartConfigs.appconduits.chartValues.baseValuesRootDir=examples/chartvalues/appconduits \
+  destroy &
+```
+
+Cleanup `hogapp` releases:
+```
+./helmfile \
+  --log-level debug \
+  --file deployments.helmfile.yaml \
+  --state-values-set targetCluster=minikube \
+  --namespace bitsofinfo-apps \
+  --selector context=stage-qa \
+  --environment hogapp \
+  --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=examples/chartvalues/appdeploy \
+  destroy &
+
+./helmfile \
+  --log-level debug \
+  --file conduits.helmfile.yaml \
+  --state-values-set targetCluster=minikube \
+  --namespace bitsofinfo-apps \
+  --selector context=stage-qa \
+  --environment hogapp \
+  --state-values-set chartConfigs.appconduits.chartValues.baseValuesRootDir=examples/chartvalues/appconduits \
+  destroy &
+```

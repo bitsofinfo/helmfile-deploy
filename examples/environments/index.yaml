@@ -2,6 +2,9 @@
 # from the ROOT of this project where the main helmfile
 # lives (via. -f [helmfile.yaml]), NOT this directory...
 #
+# For each application you want to deploy and/or define
+# conduits for you should add an entry below
+#
 # TODO: https://github.com/roboll/helmfile/issues/747
 
 {{ $environmentsDir := requiredEnv "HELMFILE_DEPLOY_ENVIRONMENTS_DIR" }}

@@ -7,5 +7,7 @@ clusters:
 
       # assumes you have an ingress controller installed such as:
       # https://github.com/bitsofinfo/appdeploy/blob/master/examples/TRAEFIK_SETUP.md
+      # This value is just here to be referenced in the examples "environments"
+      # values customizations (i.e. see environments/*/chartconfigs.yaml) for samples
       default:
         url: "https://bitsofinfo-traefik.test.local"

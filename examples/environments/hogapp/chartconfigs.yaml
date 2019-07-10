@@ -4,6 +4,7 @@ chartConfigs:
       values:
         image:
           repository: "bitsofinfo/hogapp"
+
         containerPorts:
           - name: nginx80
             port: 80
@@ -15,3 +16,10 @@ chartConfigs:
             service: true
             ingress: true
             tls: true
+
+        # here is an example (has no actual effect on running app)
+        # of referencing "helmfile" state value data defined
+        # in examples/values/customized-chartconfigs.yaml
+        env:
+          INGRESS_CONTROLLER_URL:
+            value: "{{.helmfile.targetCluster.ingressControllers.default.url}}"
