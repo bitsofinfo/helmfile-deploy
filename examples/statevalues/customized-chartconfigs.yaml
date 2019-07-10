@@ -1,6 +1,6 @@
-# These customize the defaults in helmfile-deploy/values/000-globals.yaml
+# These customize the defaults in helmfile-deploy/statevalues/000-globals.yaml
 # and will affect all environments (unless overridden)
-# @see helmfile-deploy/values/000-globals.yaml for details
+# @see helmfile-deploy/statevalues/000-globals.yaml for details
 
 chartConfigs:
 

@@ -1,6 +1,6 @@
 values:
-  - values/000-globals.yaml
-  - values/001-clusters.yaml
+  - statevalues/000-globals.yaml
+  - statevalues/001-clusters.yaml
   - {{ requiredEnv "HELMFILE_DEPLOY_STATE_VALUES_DIR" }}/*
 ---
 bases:
@@ -75,7 +75,7 @@ releases:
             i.e. this would be declared in environments/[helmfile-environment]/chartconfigs.yaml
 
         5. The global state values "chartConfigs"
-            i.e. this would be declard in: values/globals.yaml
+            i.e. this would be declared in: statevalues/000-globals.yaml or any other HELMFILE_DEPLOY_STATE_VALUES_DIR yaml
 
         6. Note with the sprig "merge" function: see oddities: https://github.com/Masterminds/sprig/issues/120
 

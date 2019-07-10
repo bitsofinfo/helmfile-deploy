@@ -1,0 +1,7 @@
+# In this folder you place your custom configs
+# we never commit anything other than README to helmfile-deploy
+
+*
+
+# we retain the readme...
+!README.md

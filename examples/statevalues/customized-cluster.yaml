@@ -1,3 +1,7 @@
+# These customize the defaults in helmfile-deploy/statevalues/001-clusters.yaml
+# and will affect all environments (unless overridden)
+# @see helmfile-deploy/statevalues/000-clusters.yaml for details
+
 clusters:
 
   minikube:

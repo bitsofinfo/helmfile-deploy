@@ -9,7 +9,7 @@ This should be enough to get your feet wet.
 ## Setup
 
 It assumes you will run against [Minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/) locally. **If you want to point it to another cluster (optional!)**:
-* Edit the [customized-cluster.yaml](values/customized-cluster.yaml) (or add your own yaml file under `examples/values/`)
+* Edit the [customized-cluster.yaml](statevalues/customized-cluster.yaml) (or add your own yaml file under `examples/statevalues/`)
 * Add a new `cluster` element for your own named cluster.
 ```
 clusters:
@@ -54,12 +54,12 @@ helm repo update
 
 ## First steps
 
-We need to declare some ENVIRONMENT variables defining configuration locations for `helmfile-deploy`. Note that currently these locations must be *RELATIVE* from the root of the `helmfile-deploy` project (see [743](https://github.com/roboll/helmfile/issues/743)) 
+We need to declare some ENVIRONMENT variables defining configuration locations for `helmfile-deploy`. Note that currently these locations must be *RELATIVE* from the root of the `helmfile-deploy` project (see [743](https://github.com/roboll/helmfile/issues/743))
 
 ### HELMFILE_DEPLOY_STATE_VALUES_DIR
-This variable designates where your custom `helmfile` *state values* can be found. Within this directory you can have one or more custom `*.yaml` that override and customize known `helmfile-deploy` state values defined in [values/](../values) Its important to note that these values are not `helm` chart values, but rather values that are consumed by the helmfile release templates themselves ([deployments.helmfile.yaml](../deployments.helmfile.yaml) & [conduits.helmfile.yaml](../conduits.helmfile.yaml))
+This variable designates where your custom `helmfile` *state values* can be found. Within this directory you can have one or more custom `*.yaml` that override and customize known `helmfile-deploy` state values defined in [statevalues/](../statevalues) Its important to note that these values are not `helm` chart values, but rather values that are consumed by the helmfile release templates themselves ([deployments.helmfile.yaml](../deployments.helmfile.yaml) & [conduits.helmfile.yaml](../conduits.helmfile.yaml))
 ```
-export HELMFILE_DEPLOY_STATE_VALUES_DIR=examples/values
+export HELMFILE_DEPLOY_STATE_VALUES_DIR=examples/statevalues
 ```
 
 ### HELMFILE_DEPLOY_ENVIRONMENTS_DIR
