@@ -8,7 +8,7 @@ This should be enough to get your feet wet.
 
 ## Setup
 
-It assumes you will run against [Minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/) locally. **If you want to point it to another cluster**:
+It assumes you will run against [Minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/) locally. **If you want to point it to another cluster (optional!)**:
 * Edit the [customized-cluster.yaml](values/customized-cluster.yaml) (or add your own yaml file under `examples/values/`)
 * Add a new `cluster` element for your own named cluster.
 ```
