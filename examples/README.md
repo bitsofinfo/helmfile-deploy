@@ -284,7 +284,7 @@ Cleanup `catapp` releases:
   --selector context=stage-qa \
   --environment catapp \
   --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=examples/chartvalues/appdeploy \
-  destroy &
+  destroy
 
 ./helmfile \
   --file conduits.helmfile.yaml \
@@ -293,7 +293,7 @@ Cleanup `catapp` releases:
   --selector context=stage-qa \
   --environment catapp \
   --state-values-set chartConfigs.appconduits.chartValues.baseValuesRootDir=examples/chartvalues/appconduits \
-  destroy &
+  destroy
 ```
 
 Cleanup `dogapp` releases:
