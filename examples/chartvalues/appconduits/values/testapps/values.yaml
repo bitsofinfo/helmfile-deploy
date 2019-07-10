@@ -1,5 +1,7 @@
 # Customized values for appconduits chart
 # https://github.com/bitsofinfo/appconduits
+# Values here can be overriden or changed
+# at any level below (i.e. in each environment)
 
 hooks:
   postInstallUpgrade:

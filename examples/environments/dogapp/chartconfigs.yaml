@@ -2,6 +2,8 @@ chartConfigs:
 
   # Customized values for appdeploy chart
   # https://github.com/bitsofinfo/appdeploy
+  # values here will override/merge w/ those
+  # specified anywhere above
   appdeploy:
     chartValues:
       values:
