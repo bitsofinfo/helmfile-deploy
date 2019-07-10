@@ -1,4 +1,5 @@
 # Customized values for appdeploy chart
+# https://github.com/bitsofinfo/appdeploy
 
 app:
   environment: "stage"

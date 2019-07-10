@@ -1,3 +1,6 @@
+# Customized values for appconduits chart
+# https://github.com/bitsofinfo/appconduits
+
 hooks:
   postInstallUpgrade:
     # INTENTIONALLY PUBLIC FOR THIS EXAMPLE!
