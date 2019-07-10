@@ -1,2 +1,4 @@
-# nothing to customize for appconduits
-# we just use the chart's values.yaml defaults as-is
+hooks:
+  postInstallUpgrade:
+    # INTENTIONALLY PUBLIC FOR THIS EXAMPLE!
+    webhook_url: https://hooks.slack.com/services/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

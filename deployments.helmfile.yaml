@@ -186,6 +186,11 @@ releases:
           repository: {{ $chartConfigs.appdeploy.chartValues.values.image.repository }}
           tag: "{{ $currService.version }}"
 
+        {{ if hasKey $chartConfigs.appdeploy.chartValues.values "containerPorts" }}
+        containerPorts:
+{{ toYaml $chartConfigs.appdeploy.chartValues.values.containerPorts | indent 12 }}
+        {{ end }}
+
         {{ if hasKey $chartConfigs.appdeploy.chartValues.values "ingress" }}
         ingress:
 {{ toYaml $chartConfigs.appdeploy.chartValues.values.ingress | indent 12 }}

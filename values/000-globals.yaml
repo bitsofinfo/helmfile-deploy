@@ -20,7 +20,7 @@ chartConfigs:
 
   appconduits:
     chart: bitsofinfo-appconduits/appconduits
-    version: 1.0.8
+    version: 1.0.9
     #
     # Further chart values customization:
     #
@@ -53,7 +53,7 @@ chartConfigs:
 
   appdeploy:
     chart: bitsofinfo-appdeploy/appdeploy
-    version: 1.1.4
+    version: 1.1.5
     #
     # Further chart values customization:
     #

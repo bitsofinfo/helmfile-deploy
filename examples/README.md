@@ -1,19 +1,39 @@
 # Example
 
-Below is a basic example. Post install/upgrade alerts will be sent to the https://bitsofinfo.slack.com `#bitsofinfo-dev` channel ([self signup to channel](https://join.slack.com/t/bitsofinfo/shared_invite/enQtNjY1ODIzNTkyMDMyLTEzZGUwNzExOWYyMmZmMTQyYWZiYzJjYTJkNGI3MWMzNzQ3MTE2NzVhM2Q1ZjE4OGViYjA1NGY4MzdiZDg3ZWI))
+Below is a basic example. Slack install/upgrade alerts will be sent to the https://bitsofinfo.slack.com `#bitsofinfo-dev` channel ([self signup to channel](https://join.slack.com/t/bitsofinfo/shared_invite/enQtNjY1ODIzNTkyMDMyLTEzZGUwNzExOWYyMmZmMTQyYWZiYzJjYTJkNGI3MWMzNzQ3MTE2NzVhM2Q1ZjE4OGViYjA1NGY4MzdiZDg3ZWI))
 
 This should be enough to get your feet wet.
 
+**Note! For all commands below, you should be running them from the ROOT of the helmfile-deploy project!**
+
 ## Setup
+
+It assumes you will run against [Minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/) locally. If you want to point it to another cluster:
+* Edit the [customized-cluster.yaml](values/customized-cluster.yaml) (or add your own yaml file under `examples/values/`)
+* Add a new `cluster` element for your own named cluster.
+```
+clusters:
+  ...
+  <MYCLUSTERNAME>:
+    name: "<MYCLUSTERNAME>"
+    helmDefaults:
+      tillerNamespace: kube-system
+      kubeContext: <VALID KUBE CONTEXT NAME>
+      wait: true
+    ingressControllers:
+      default:
+        url: "[URL FOR YOUR INGRESS CONTROLLER]"
+```
+* For all commands below alter the argument `--state-values-set targetCluster=<MYCLUSTERNAME>`
 
 You **MUST** have `helm` installed.
 
 You **MUST** have `helmfile` installed: https://github.com/roboll/helmfile and be using a version **>= 0.79.4**
 
-You should install `yq` https://github.com/kislyuk/yq (`brew install python-yq`) (needed for examples only)
+You should install `yq` https://github.com/kislyuk/yq (`brew install python-yq`) *(needed for examples only)*
 
 **IMPORTANT!:**
-Before we continue we need to setup an `IngressController` [lets use Traefik, click here for setup instructions](https://github.com/bitsofinfo/appdeploy/blob/master/examples/TRAEFIK_SETUP.md)
+Before we continue, you need to setup an `IngressController` [lets use Traefik, click here for setup instructions](https://github.com/bitsofinfo/appdeploy/blob/master/examples/TRAEFIK_SETUP.md)
 
 For this example: your `/etc/hosts` (unless you have DNS setup) should have an entry with the contents of [hosts.txt](https://github.com/bitsofinfo/appconduits/blob/master/examples/hosts.txt) (you need to customized w/ your LB IP..)
 
@@ -24,13 +44,17 @@ helm repo add bitsofinfo-appconduits https://raw.githubusercontent.com/bitsofinf
 helm repo update
 ```
 
-## First: we need to declare some locations for helmfile-deploy
+## First steps
 
+We need to declare some ENVIRONMENT variables defining configuration locations for `helmfile-deploy`
+
+### HELMFILE_DEPLOY_STATE_VALUES_DIR
 This variable designates where your custom `helmfile` *state values* can be found. Within this directory you can have one or more custom `*.yaml` that override and customize known `helmfile-deploy` state values defined in [values/](../values) Its important to note that these values are not `helm` chart values, but rather values that are consumed by the helmfile release templates themselves ([deployments.helmfile.yaml](../deployments.helmfile.yaml) & [conduits.helmfile.yaml](../conduits.helmfile.yaml))
 ```
 export HELMFILE_DEPLOY_STATE_VALUES_DIR=examples/values
 ```
 
+### HELMFILE_DEPLOY_ENVIRONMENTS_DIR
 This variable designates where your custom `helmfile` *environments* can be found. This directory should declare a single `index.yaml` that declares your helmfile `environments:` block. For the purposes of the `helmfile-deploy` framework, each helmfile *environment* represents a target application that can be deployed.
 ```
 export HELMFILE_DEPLOY_ENVIRONMENTS_DIR=examples/environments
@@ -40,11 +64,11 @@ export HELMFILE_DEPLOY_ENVIRONMENTS_DIR=examples/environments
 
 Running this will ensure all defined `services` within the `catapp` *environment* (defined in [environments/catapp/stage-qa.yaml](environments/catapp/stage-qa.yaml)) under the *context* `stage-qa` are running against the `targetCluster=minikube`
 
-A unique helmfile `release` is defined for each of the latter using the `deployments.helmfile.yaml` helmfile YAML which subsequently invokes `helm` using the [appdeploy](https://github.com/bitsofinfo/appdeploy) helm chart.
+A unique helmfile `release` is defined for each of the latter using the [deployments.helmfile.yaml](../deployments.helmfile.yaml) helmfile YAML which subsequently invokes `helm` for each generated *release* using the [appdeploy](https://github.com/bitsofinfo/appdeploy) helm chart.
 
+(to see debug output add `--log-level debug`)
 ```
 ./helmfile \
-  --log-level debug \
   --file deployments.helmfile.yaml \
   --state-values-set targetCluster=minikube \
   --namespace bitsofinfo-apps \
@@ -71,6 +95,8 @@ You should see `INGRESS_CONTROLLER_URL:  https://bitsofinfo-traefik.test.local`
 
 ### So... how can I just see what will be generated?
 
+If you just want to see the raw YAML that will be produced and sent to Kubernetes you can use the helmfile `template` argument as follows. (Here we pipe it to `python-yq` to get it cleaned up/formatted better)
+
 ```
 ./helmfile \
   --file deployments.helmfile.yaml \
@@ -87,13 +113,15 @@ Great. Let's move on.
 
 ## Lets deploy all defined "conduits" for "catapp"
 
+`helmfile-deploy` also provides a helmfile template ([conduits.helmfile.yaml](../conduits.helmfile.yaml)) that generates helmfile *releases* for the [appconduits](https://github.com/bitsofinfo/appconduits) helm chart
+
 Running this will ensure all defined `ingress` within the `catapp` *environment* (defined in [environments/catapp/stage-qa.yaml](environments/catapp/stage-qa.yaml)) under the *context* `stage-qa` are running against the `targetCluster=minikube`
 
-A unique helmfile `release` is defined for each of the latter using the `conduits.helmfile.yaml` helmfile YAML which subsequently invokes `helm` using the [appconduits](https://github.com/bitsofinfo/appconduits) helm chart.
+A unique helmfile `release` is defined for each of the latter using the [conduits.helmfile.yaml](../conduits.helmfile.yaml) helmfile YAML which subsequently invokes `helm` for each generated *release* using the [appconduits](https://github.com/bitsofinfo/appconduits) helm chart.
 
+(to see debug output add `--log-level debug`)
 ```
 ./helmfile \
-  --log-level debug \
   --file conduits.helmfile.yaml \
   --state-values-set targetCluster=minikube \
   --namespace bitsofinfo-apps \
@@ -115,31 +143,31 @@ Once this is complete we can access "catapp" via its custom `Ingress/Services` n
 
 |Expect|target|
 |---|---|
-|RED catapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://animals.mydomain.com/red`|
-|ORANGE catapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://animals.mydomain.com/orange`|
-|RED catapp:4.0.0|`curl http://animals-next.mydomain.com/red`|
-|ORANGE catapp:4.0.0|`curl http://animals-next.mydomain.com/orange`|
-|RED catapp:3.0.0|`curl http://animals-current.mydomain.com/red`|
-|ORANGE catapp:3.0.0|`curl http://animals-current.mydomain.com/orange`|
-|RED catapp:2.0.0|`curl http://animals-previous.mydomain.com/red`|
-|ORANGE catapp:2.0.0|`curl http://animals-previous.mydomain.com/orange`|
+|RED catapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://animals.mydomain.com/red/`|
+|ORANGE catapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://animals.mydomain.com/orange/`|
+|RED catapp:4.0.0|`curl http://animals-next.mydomain.com/red/`|
+|ORANGE catapp:4.0.0|`curl http://animals-next.mydomain.com/orange/`|
+|RED catapp:3.0.0|`curl http://animals-current.mydomain.com/red/`|
+|ORANGE catapp:3.0.0|`curl http://animals-current.mydomain.com/orange/`|
+|RED catapp:2.0.0|`curl http://animals-previous.mydomain.com/red/`|
+|ORANGE catapp:2.0.0|`curl http://animals-previous.mydomain.com/orange/`|
 
 ## Next lets do the same for hogapp
 
 Note that **hogapp** exposes multiple ports and it's [environments/hogapp/chartconfigs.yaml](environments/hogapp/chartconfigs.yaml)
 reflects that by overriding the default `containerPorts` it would otherwise end up using as defined in [chartvalues/appdeploy/values/testapps/values.yaml](chartvalues/appdeploy/values/testapps/values.yaml)
 
-Ensure all *hogapp* deployment releases:
+Ensure all *hogapp* deployment releases: (to see debug output add `--log-level debug`)
 ```
 ./helmfile \
-  --log-level debug \
+--log-level debug \
   --file deployments.helmfile.yaml \
   --state-values-set targetCluster=minikube \
   --namespace bitsofinfo-apps \
   --selector context=stage-qa \
   --environment hogapp \
   --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=examples/chartvalues/appdeploy \
-  apply
+  template
 ```
 
 ```
@@ -151,10 +179,9 @@ curl http://hogapp-stage-qa-3-0-0-443.local
 curl http://hogapp-stage-qa-4-0-0-443.local
 ```
 
-Ensure all *hogapp* conduit releases:
+Ensure all *hogapp* conduit releases: (to see debug output add `--log-level debug`)
 ```
 ./helmfile \
-  --log-level debug \
   --file conduits.helmfile.yaml \
   --state-values-set targetCluster=minikube \
   --namespace bitsofinfo-apps \
@@ -174,21 +201,20 @@ Ensure all *hogapp* conduit releases:
 
 |Expect|target|
 |---|---|
-|BROWN hogapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://animals.mydomain.com/brown`|
-|PINK hogapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://animals.mydomain.com/pink`|
-|BROWN hogapp:4.0.0|`curl http://animals-next.mydomain.com/brown`|
-|PINK hogapp:4.0.0|`curl http://animals-next.mydomain.com/pink`|
-|BROWN hogapp:3.0.0|`curl http://animals-current.mydomain.com/brown`|
-|PINK hogapp:3.0.0|`curl http://animals-current.mydomain.com/pink`|
-|BROWN hogapp:2.0.0|`curl http://animals-previous.mydomain.com/brown`|
-|PINK hogapp:2.0.0|`curl http://animals-previous.mydomain.com/pink`|
+|BROWN hogapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://animals.mydomain.com/brown/`|
+|PINK hogapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://animals.mydomain.com/pink/`|
+|BROWN hogapp:4.0.0|`curl http://animals-next.mydomain.com/brown/`|
+|PINK hogapp:4.0.0|`curl http://animals-next.mydomain.com/pink/`|
+|BROWN hogapp:3.0.0|`curl http://animals-current.mydomain.com/brown/`|
+|PINK hogapp:3.0.0|`curl http://animals-current.mydomain.com/pink/`|
+|BROWN hogapp:2.0.0|`curl http://animals-previous.mydomain.com/brown/`|
+|PINK hogapp:2.0.0|`curl http://animals-previous.mydomain.com/pink/`|
 
 ## Next lets do the same for dogapp
 
-Ensure all *dogapp* deployment releases:
+Ensure all *dogapp* deployment releases: (to see debug output add `--log-level debug`)
 ```
 ./helmfile \
-  --log-level debug \
   --file deployments.helmfile.yaml \
   --state-values-set targetCluster=minikube \
   --namespace bitsofinfo-apps \
@@ -204,10 +230,9 @@ curl http://dogapp-stage-qa-3-0-0-80.local
 curl http://dogapp-stage-qa-4-0-0-80.local
 ```
 
-Ensure all *dogapp* conduit releases:
+Ensure all *dogapp* conduit releases: (to see debug output add `--log-level debug`)
 ```
 ./helmfile \
-  --log-level debug \
   --file conduits.helmfile.yaml \
   --state-values-set targetCluster=minikube \
   --namespace bitsofinfo-apps \
@@ -230,14 +255,14 @@ Ensure all *dogapp* conduit releases:
 |dogapp:4.0.0|`curl http://animals-next.mydomain.com`|
 |dogapp:3.0.0|`curl http://animals-current.mydomain.com`|
 |dogapp:2.0.0|`curl http://animals-previous.mydomain.com`|
-|BLUE dogapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://animals.mydomain.com/blue`|
-|GREEN dogapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://animals.mydomain.com/green`|
-|BLUE dogapp:4.0.0|`curl http://animals-next.mydomain.com/blue`|
-|GREEN dogapp:4.0.0|`curl http://animals-next.mydomain.com/green`|
-|BLUE dogapp:3.0.0|`curl http://animals-current.mydomain.com/blue`|
-|GREEN dogapp:3.0.0|`curl http://animals-current.mydomain.com/green`|
-|BLUE dogapp:2.0.0|`curl http://animals-previous.mydomain.com/blue`|
-|GREEN dogapp:2.0.0|`curl http://animals-previous.mydomain.com/green`|
+|BLUE dogapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://animals.mydomain.com/blue/`|
+|GREEN dogapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://animals.mydomain.com/green/`|
+|BLUE dogapp:4.0.0|`curl http://animals-next.mydomain.com/blue/`|
+|GREEN dogapp:4.0.0|`curl http://animals-next.mydomain.com/green/`|
+|BLUE dogapp:3.0.0|`curl http://animals-current.mydomain.com/blue/`|
+|GREEN dogapp:3.0.0|`curl http://animals-current.mydomain.com/green/`|
+|BLUE dogapp:2.0.0|`curl http://animals-previous.mydomain.com/blue/`|
+|GREEN dogapp:2.0.0|`curl http://animals-previous.mydomain.com/green/`|
 
 
 ## Cleanup
@@ -245,7 +270,6 @@ Ensure all *dogapp* conduit releases:
 Cleanup `catapp` releases:
 ```
 ./helmfile \
-  --log-level debug \
   --file deployments.helmfile.yaml \
   --state-values-set targetCluster=minikube \
   --namespace bitsofinfo-apps \
@@ -255,7 +279,6 @@ Cleanup `catapp` releases:
   destroy &
 
 ./helmfile \
-  --log-level debug \
   --file conduits.helmfile.yaml \
   --state-values-set targetCluster=minikube \
   --namespace bitsofinfo-apps \
@@ -268,45 +291,41 @@ Cleanup `catapp` releases:
 Cleanup `dogapp` releases:
 ```
 ./helmfile \
-  --log-level debug \
   --file deployments.helmfile.yaml \
   --state-values-set targetCluster=minikube \
   --namespace bitsofinfo-apps \
   --selector context=stage-qa \
   --environment dogapp \
   --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=examples/chartvalues/appdeploy \
-  destroy &
+  destroy
 
 ./helmfile \
-  --log-level debug \
   --file conduits.helmfile.yaml \
   --state-values-set targetCluster=minikube \
   --namespace bitsofinfo-apps \
   --selector context=stage-qa \
   --environment dogapp \
   --state-values-set chartConfigs.appconduits.chartValues.baseValuesRootDir=examples/chartvalues/appconduits \
-  destroy &
+  destroy
 ```
 
 Cleanup `hogapp` releases:
 ```
 ./helmfile \
-  --log-level debug \
   --file deployments.helmfile.yaml \
   --state-values-set targetCluster=minikube \
   --namespace bitsofinfo-apps \
   --selector context=stage-qa \
   --environment hogapp \
   --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=examples/chartvalues/appdeploy \
-  destroy &
+  destroy
 
 ./helmfile \
-  --log-level debug \
   --file conduits.helmfile.yaml \
   --state-values-set targetCluster=minikube \
   --namespace bitsofinfo-apps \
   --selector context=stage-qa \
   --environment hogapp \
   --state-values-set chartConfigs.appconduits.chartValues.baseValuesRootDir=examples/chartvalues/appconduits \
-  destroy &
+  destroy
 ```
