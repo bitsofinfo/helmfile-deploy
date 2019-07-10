@@ -3,9 +3,13 @@
 # lives (via. -f [helmfile.yaml]), NOT this directory...
 #
 # For each application you want to deploy and/or define
-# conduits for you should add an entry below
+# conduits for you should add an new "environments" entry below
+#
+# To target a specific environment when running helmfile you do
+# so via the `--environment [envname]` argument
 #
 # TODO: https://github.com/roboll/helmfile/issues/747
+#
 
 {{ $environmentsDir := requiredEnv "HELMFILE_DEPLOY_ENVIRONMENTS_DIR" }}
 

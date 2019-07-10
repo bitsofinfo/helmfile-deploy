@@ -1,4 +1,7 @@
 chartConfigs:
+
+  # Customized values for appdeploy chart
+  # https://github.com/bitsofinfo/appdeploy
   appdeploy:
     chartValues:
       values:
