@@ -32,12 +32,12 @@ chartConfigs:
     # For the below configuration the conduits.helmfile.yaml would expect
     # the following values.yaml files to exist:
     #
-    # - ../myAppConduitsValues/values/defaults/values.yaml
-    # - ../myAppConduitsValues/values/app1/values.yaml
-    # - ../myAppConduitsValues/values/misc/values.yaml
+    # - ../custom-configs/myconfigs/chartvalues/appconduits/values/defaults/values.yaml
+    # - ../custom-configs/myconfigs/chartvalues/appconduits/values/app1/values.yaml
+    # - ../custom-configs/myconfigs/chartvalues/appconduits/values/misc/values.yaml
     #---------------
     #chartValues:
-    #  baseValuesRootDir: "../myAppConduitsValues"
+    #  baseValuesRootDir: "../custom-configs/myconfigs/chartvalues/appconduits"
     #  baseValues:
     #    - defaults
     #    - app1
@@ -65,12 +65,12 @@ chartConfigs:
     # For the below configuration the deployments.helmfile.yaml would expect
     # the following values.yaml files to exist:
     #
-    # - ../myAppDeployValues/values/defaults/values.yaml
-    # - ../myAppDeployValues/values/app1/values.yaml
-    # - ../myAppDeployValues/values/misc/values.yaml
+    # - ../custom-configs/myconfigs/chartvalues/appdeploy/values/defaults/values.yaml
+    # - ../custom-configs/myconfigs/chartvalues/appdeploy/values/app1/values.yaml
+    # - ../custom-configs/myconfigs/chartvalues/appdeploy/values/misc/values.yaml
     #---------------
     #chartValues:
-    #  baseValuesRootDir: "../myAppDeployValues"
+    #  baseValuesRootDir: "../custom-configs/myconfigs/chartvalues/appdeploy"
     #  baseValues:
     #    - defaults
     #    - app1

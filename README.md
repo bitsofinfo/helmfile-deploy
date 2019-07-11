@@ -78,4 +78,92 @@ The project also provides some core helmfile state values files which define the
 **custom configs**:  
 As noted above, in order to actually be able to do anything with this project you need to provide your own configuration. Since currently `helmfile` depends on relative path references, we've added a [custom-configs/](custom-configs/) directory where you can build out your custom configuration. Due to `.gitignore` changes will never be committed here, however you can clone your own configs within this sub-directory and manage independently.
 
-## <a id="helmfile-term"></a>Helmfile specific concepts
+## <a id="setup"></a>Install & Setup
+
+Note: before you try your own custom configuration its highly recommended that [you take a look at the examples/](examples/)
+
+Pre-requisites:
+
+1. have the latest [helm](https://helm.sh/) installed
+1. have the latest [helmfile](https://github.com/roboll/helmfile) installed **>= 0.79.4**
+
+**Clone the helmfile-deploy project**
+
+You need to clone the `helmfile-deploy` project:
+```
+git clone --branch [TAG] https://github.com/bitsofinfo/helmfile-deploy.git
+```
+
+**Create your own configs**
+
+Next lets create a place for your own configuration (custom *state values*, *base chart values* and *environments*):
+
+*NOTE: change `myconfig` to whatever name you want, in fact any of the directories here can be named anything you want.*
+
+```
+cd helmfile-deploy/custom-configs
+
+mkdir -p myconfigs/environments
+mkdir -p myconfigs/statevalues
+```
+
+These are optional, but handy if you will be taking advantage of the `chartConfigs.[chartname].chartValues.baseValues` functionality. See [statevalues/000-globals.yaml](statevalues/000-globals.yaml) for more info.
+```
+mkdir -p myconfigs/chartvalues/appdeploy
+mkdir -p myconfigs/chartvalues/appconduits
+```
+
+*Note you can OPTIONALLY manage your own configs in a separate git project*
+```
+cd helmfile-deploy/custom-configs/myconfigs
+git init
+...
+```
+
+**Configure helmfile-deploy ENVIRONMENT variables**
+
+These variables tell the *helmfile-deploy* templates where to find your custom configuration. Note this is relative from the ROOT of the helm-deploy project.
+```
+export HELMFILE_DEPLOY_STATE_VALUES_DIR=custom-configs/myconfigs/statevalues
+export HELMFILE_DEPLOY_ENVIRONMENTS_DIR=custom-configs/myconfigs/environments
+```
+
+**Optionally configure your targetCluster**
+
+Out of the box, [helmfile-deploy](https://github.com/bitsofinfo/helmfile-deploy) declares one named *cluster* that it can target [named minikube](https://github.com/bitsofinfo/helmfile-deploy/blob/master/statevalues/001-clusters.yaml) which you can reference for local development.
+
+Additional *clusters* can be defined by declaring them in YAML state values under the configured `HELMFILE_DEPLOY_STATE_VALUES_DIR`.
+
+When you invoke `helmfile` the argument that specifies the cluster you want to apply the declared state to is:
+```
+--state-values-set targetCluster=[clustername]
+```
+
+**Invoke helmfile against one of your custom app environments**
+
+We need to be running the `helmfile` commands from the root of the helmfile-deploy project
+```
+cd path/to/helmfile-deploy/
+```
+
+Apply deployments:
+```
+helmfile \
+  --file deployments.helmfile.yaml \
+  --state-values-set targetCluster=minikube \
+  --namespace [YOUR NAMESPACE] \
+  --environment [TARGET APP ENVIRONMENT] \
+  --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=custom-configs/myconfigs/chartvalues/appdeploy \
+  apply
+```
+
+Apply conduits:
+```
+helmfile \
+  --file conduits.helmfile.yaml \
+  --state-values-set targetCluster=minikube \
+  --namespace [YOUR NAMESPACE] \
+  --environment [TARGET APP ENVIRONMENT] \
+  --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=custom-configs/myconfigs/chartvalues/appdeploy \
+  apply
+```
