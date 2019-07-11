@@ -7,6 +7,7 @@ This project provides a framework of *helmfiles* using the amazing tool [helmfil
 * [Overview](#overview)
 * [Examples](examples/)
 * [Install/Setup](#setup)
+* [Dry running & debugging](#dry)
 * [helmfile concepts](#helmfile-term)
 * [helmfile-deploy concepts](#helmfile-dep-term)
 * [What this provides](#provide)
@@ -167,3 +168,24 @@ helmfile \
   --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=custom-configs/myconfigs/chartvalues/appdeploy \
   apply
 ```
+
+## <a id="dry"></a>Dry running & debugging
+
+*helmfile-deploy* can generate a lot of YAML. It can often be useful to both get more information on what its constructing as well as simply output the raw YAML to STDOUT/disk and save it and NOT send it to Kubernetes.
+
+**template mode**:  
+The `helmfile` command supports the `template` argument. Simply changing `apply | sync etc` to `template` will output all generated YAML to stdout. Due to the nature of helm charts and generating some extra whitespace, it can also be useful to use something like [python-yq](https://formulae.brew.sh/formula/python-yq) to reformat the the YAML
+
+```
+helmfile \
+  --file deployments.helmfile.yaml \
+  --state-values-set targetCluster=minikube \
+  --namespace [YOUR NAMESPACE] \
+  --environment [TARGET APP ENVIRONMENT] \
+  --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=custom-configs/myconfigs/chartvalues/appdeploy \
+  --quiet \
+  template | yq --yaml-output .
+```
+
+**enable debugging**:  
+Simply adding the `--log-level debug` flag to helmfile can also aid in figuring out whats going on:
