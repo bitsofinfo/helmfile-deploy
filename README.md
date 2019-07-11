@@ -6,8 +6,10 @@ This project provides a framework of *helmfiles* using the amazing tool [helmfil
 
 * [Overview](#overview)
 * [Examples](examples/)
+* [Install/Setup](#setup)
 * [helmfile concepts](#helmfile-term)
 * [helmfile-deploy concepts](#helmfile-dep-term)
+* [What this provides](#provide)
 
 ## <a id="overview"></a>Overview
 
@@ -63,9 +65,17 @@ When you execute the `helmfile` command against a *helmfile-deploy provided helm
 
 Good question. Each application's helmfile *environment* can also declare its own `chartConfigs.appdeploy` and/or `chartConfigs.appconduits` sections. Here is where you can tailor `chartValues` for each app directly inline and even reference shared `baseValues` per chart for common configuration shared across many apps. `chartConfigs` blocks can be defined and/or overridden and supplemented at various levels all the way down to the `service` level. See examples [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/examples/environments/catapp/chartconfigs.yaml), [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/examples/statevalues/customized-chartconfigs.yaml), [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/examples/chartvalues/appdeploy/values/testapps/values.yaml) and [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/statevalues/000-globals.yaml). For more details on this see: https://github.com/bitsofinfo/helmfile-deploy/blob/master/statevalues/000-globals.yaml
 
-## What does helmfile-deploy provide?
+## <a id="provide"></a>What does helmfile-deploy provide?
 
-**helmfiles**
-Provides two types of [helmfile](https://github.com/roboll/helmfile) *helmfiles*:
+**helmfiles**:  
+Two [helmfile](https://github.com/roboll/helmfile) *helmfiles* are provided:
 * [deployments.helmfile.yaml](deployments.helmfile.yaml): Generates a unique helmfile **release** of the [appdeploy Helm chart](https://github.com/bitsofinfo/appdeploy) for each declared `service` within a target helmfile `environment`
 * [conduits.helmfile.yaml](conduits.helmfile.yaml): Generates a unique helmfile **release** of the [appconduits Helm chart](https://github.com/bitsofinfo/appdeploy) for each declared `service` within a target helmfile `environment`
+
+**core state values**:  
+The project also provides some core helmfile state values files which define the core `chartConfigs` (which you can override at lower levels), and a basic `cluster` definition for minikube. [See here for more info](https://github.com/bitsofinfo/helmfile-deploy/tree/master/statevalues)
+
+**custom configs**:  
+As noted above, in order to actually be able to do anything with this project you need to provide your own configuration. Since currently `helmfile` depends on relative path references, we've added a [custom-configs/](custom-configs/) directory where you can build out your custom configuration. Due to `.gitignore` changes will never be committed here, however you can clone your own configs within this sub-directory and manage independently.
+
+## <a id="helmfile-term"></a>Helmfile specific concepts
