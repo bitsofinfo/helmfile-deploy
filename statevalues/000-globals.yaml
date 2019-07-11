@@ -84,9 +84,21 @@ chartConfigs:
     #
 
 
-
+#------------------------------------------------------------------------------
+# This section defines general configuration for the actual helmfile templates
+# that generate the actual releases driven by each environment's yaml
+#------------------------------------------------------------------------------
 releaseConfigs:
+
+  # Configs specific to appdeploy release generation
+  # i.e. consumed in: deployments.helmfile.yaml
+  deployments:
+    # nothing yet
+
+  # Configs specific to appconduits release generation
+  # i.e. consumed in: conduits.helmfile.yaml
   conduits:
+
     # The "service" selector label "names" (i.e. keys) for standard
     # selector labels generated for all "appconduits" helmfile releases
     selectorlabelNames:

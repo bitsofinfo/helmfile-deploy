@@ -2,7 +2,7 @@
 # Clusters:
 # Here we define named "clusters"
 #
-# You can declare your own by adding addition *.yaml files
+# You can declare your own by adding additional *.yaml files
 # within the HELMFILE_DEPLOY_STATE_VALUES_DIR
 #
 # The values within each "named" cluster are open-ended, meaning you
@@ -29,5 +29,3 @@ clusters:
       tillerNamespace: kube-system
       kubeContext: minikube
       wait: true
-
-  
