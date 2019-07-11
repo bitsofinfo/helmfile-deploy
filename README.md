@@ -17,7 +17,7 @@ Basically `helmfile-deploy` provides a set of *helmfiles* that can generate rele
 Before you venture off to do any of this we, need to cover some basics and get on the same page w/ our terminology.
 
 ## <a id="helmfile-term"></a>Helmfile specific concepts
----
+
 First, some basic *helmfile* concepts you need to understand:
 
 (for full documentation on this see: https://github.com/roboll/helmfile)
@@ -35,7 +35,7 @@ Helmfile *state values* are variables/values that are only relevant during the e
 When you invoke the `helmfile` command against a target *helmfile yaml file*, you also specify a target `--environment [name]`. Doing so will instruct *helmfile* to load a set of *environment values* specific to that target `--environment`. These values (in combination with *state values*) can be used as variables to also drive the generation of *releases* in the target *helmfile yaml file* that the `helmfile` command will process. It is important to NOT confuse *helmfile environment values* with traditional OS ENVIRONMENT variables... they are NOT the same thing. It is also important to note that a target *environment* can mean *anything* and does NOT necessarily have to mean something like "stage" or "production", but could simply be a target *application* to generate a release for etc.
 
 ## <a id="helmfile-dep-term"></a>helmfile-deploy concepts
----
+
 ... and some basic *helmfile-deploy* concepts to understand:
 
 **appdeploy and appconduits helm charts**:    
