@@ -5,8 +5,8 @@ This project provides a framework of *helmfiles* using the amazing tool [helmfil
 *helmfile-deploy* is a opinionated *framework* (for lack of a better term) that provides a set of *helmfiles* that generate *releases* for the [appdeploy](https://github.com/bitsofinfo/appdeploy) and [appconduits](https://github.com/bitsofinfo/appconduits) charts. To generate those releases, *helmfile-deploy* defines its own YAML syntax for summarizing the desired state for applications it manages. This desired "state" is expressed as *helmfile* `environments:`, one per named target application.
 
 * [Overview](#overview)
-* [helmfile terminology](#helmfile-term)
-* [helmfile-deploy terminology](#helmfile-dep-term)
+* [helmfile concepts](#helmfile-term)
+* [helmfile-deploy concepts](#helmfile-dep-term)
 
 ## <a id="overview"></a>Overview
 
