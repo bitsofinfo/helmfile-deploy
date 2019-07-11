@@ -16,7 +16,7 @@ Basically `helmfile-deploy` provides a set of *helmfiles* that can generate rele
 
 Before you venture off to do any of this we, need to cover some basics and get on the same page w/ our terminology.
 
-### <a id="helmfile-term"></a>Helmfile specific concepts
+## <a id="helmfile-term"></a>Helmfile specific concepts
 ---
 First, some basic *helmfile* concepts you need to understand:
 
@@ -34,7 +34,7 @@ Helmfile *state values* are variables/values that are only relevant during the e
 **environment values**:  
 When you invoke the `helmfile` command against a target *helmfile yaml file*, you also specify a target `--environment [name]`. Doing so will instruct *helmfile* to load a set of *environment values* specific to that target `--environment`. These values (in combination with *state values*) can be used as variables to also drive the generation of *releases* in the target *helmfile yaml file* that the `helmfile` command will process. It is important to NOT confuse *helmfile environment values* with traditional OS ENVIRONMENT variables... they are NOT the same thing. It is also important to note that a target *environment* can mean *anything* and does NOT necessarily have to mean something like "stage" or "production", but could simply be a target *application* to generate a release for etc.
 
-### <a id="helmfile-dep-term"></a>helmfile-deploy concepts
+## <a id="helmfile-dep-term"></a>helmfile-deploy concepts
 ---
 ... and some basic *helmfile-deploy* concepts to understand:
 
@@ -55,10 +55,11 @@ Within each application's helmfile *environment* YAML files ([see examples](http
 **ingress**:  
 Likewise, within each application's helmfile *environment* YAML files ([see examples](https://github.com/bitsofinfo/helmfile-deploy/tree/master/examples/environments)), the other key element that you can *optionally* declare per each `appname's` app `environment` and app `context` are `ingresses`. Each `ingress` contains one or more `mappings` and each is a simplified expression of what you really want to express; *"Here are some custom Host/Path definitions I want exposed as Ingress and here is the list of services to bind the traffic to"*. This data drives the [conduits.helmfile.yaml](conduits.helmfile.yaml) helmfile.
 
-**You may be asking... "where do all the other chart values for my apps come from??!"**
+**You may be asking... "where do all the other chart values come from??!"**
 
+Good question. Each application's helmfile *environment* can also declare its own `chartConfigs.appdeploy` and/or `chartConfigs.appconduits` sections. Here is where you can tailor `chartValues` for each app directly inline and even reference shared `baseValues` per chart for common configuration shared across many apps. `chartConfigs` blocks can be defined and/or overridenn and supplemented at various levels all the way down to the `service` level. See examples [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/examples/environments/catapp/chartconfigs.yaml), [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/examples/statevalues/customized-chartconfigs.yaml) and [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/statevalues/000-globals.yaml). For more details on this see: https://github.com/bitsofinfo/helmfile-deploy/blob/master/statevalues/000-globals.yaml
 
-### What does helmfile-deploy provide?
+## What does helmfile-deploy provide?
 
 **helmfiles**
 Provides two types of [helmfile](https://github.com/roboll/helmfile) *helmfiles*:
