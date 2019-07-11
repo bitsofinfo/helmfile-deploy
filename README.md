@@ -18,7 +18,7 @@ What does `helmfile-deploy` do? How does it work?
 
 Basically `helmfile-deploy` provides a set of *helmfiles* that can generate releases for the [appdeploy](https://github.com/bitsofinfo/appdeploy) and [appconduits](https://github.com/bitsofinfo/appconduits) helm charts. Out of the box they provided helmfiles are a bit useless and in order to actually be able to do anything with the *helmfiles* this project provides, you have to provide configuration expressed in the form of helmfile `environments:` so that `helmfile` can apply those environment values against the helmfile templates.
 
-![diag](/doc/diag1.png "Diagram1")
+![diag](/docs/diag1.png "Diagram1")
 
 Before you venture off to do any of this we, need to cover some basics and get on the same page w/ our terminology.
 
