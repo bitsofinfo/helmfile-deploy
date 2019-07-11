@@ -5,6 +5,7 @@ This project provides a framework of *helmfiles* using the amazing tool [helmfil
 *helmfile-deploy* is a opinionated *framework* (for lack of a better term) that provides a set of *helmfiles* that generate *releases* for the [appdeploy](https://github.com/bitsofinfo/appdeploy) and [appconduits](https://github.com/bitsofinfo/appconduits) charts. To generate those releases, *helmfile-deploy* defines its own YAML syntax for summarizing the desired state for applications it manages. This desired "state" is expressed as *helmfile* `environments:`, one per named target application.
 
 * [Overview](#overview)
+* [Examples](examples/)
 * [helmfile concepts](#helmfile-term)
 * [helmfile-deploy concepts](#helmfile-dep-term)
 
@@ -54,6 +55,9 @@ Within each application's helmfile *environment* YAML files ([see examples](http
 
 **ingress**:  
 Likewise, within each application's helmfile *environment* YAML files ([see examples](https://github.com/bitsofinfo/helmfile-deploy/tree/master/examples/environments)), the other key element that you can *optionally* declare per each `appname's` app `environment` and app `context` are `ingresses`. Each `ingress` contains one or more `mappings` and each is a simplified expression of what you really want to express; *"Here are some custom Host/Path definitions I want exposed as Ingress and here is the list of services to bind the traffic to"*. This data drives the [conduits.helmfile.yaml](conduits.helmfile.yaml) helmfile.
+
+**target cluster**
+When you execute the `helmfile` command against a *helmfile-deploy provided helmfile*, you also need to specify a `targetCluster` via the `--state-values-set targetCluster=[clusterName]`. This tells `helmfile` which cluster to apply the desired releases against. You can define your own `clusters` in custom *helmfile state values files* see [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/statevalues/001-clusters.yaml) and [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/examples/statevalues/customized-cluster.yaml). [See documentation here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/statevalues/001-clusters.yaml)
 
 **You may be asking... "where do all the other chart values come from??!"**
 
