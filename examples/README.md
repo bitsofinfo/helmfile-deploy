@@ -175,7 +175,7 @@ Ensure all *hogapp* deployment releases: (to see debug output add `--log-level d
   --selector context=stage-qa \
   --environment hogapp \
   --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=examples/chartvalues/appdeploy \
-  template
+  apply
 ```
 
 ```
