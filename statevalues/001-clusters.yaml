@@ -37,9 +37,12 @@ clusters:
     #chartConfigs:
     #  appconduigs:
     #    chartValues:
-    #      ...
+    #      # configures values for: https://github.com/bitsofinfo/appconduits/blob/master/values.yaml
+    #      values:
+    #        ...
     #  appdeploy:
     #    chartValues:
+    #      # configures values for: https://github.com/bitsofinfo/appdeploy/blob/master/values.yaml
     #      values:
     #        env:
     #          MY_VAR_THAT_VARIES_BY_CLUSTER:
