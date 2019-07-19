@@ -29,3 +29,18 @@ clusters:
       tillerNamespace: kube-system
       kubeContext: minikube
       wait: true
+
+    # You can also customize "chartConfigs" (i.e. values and baseValues)
+    # etc by defining a chartConfigs element here which will let you
+    # customize the values applied to each chart per cluster
+    #
+    #chartConfigs:
+    #  appconduigs:
+    #    chartValues:
+    #      ...
+    #  appdeploy:
+    #    chartValues:
+    #      values:
+    #        env:
+    #          MY_VAR_THAT_VARIES_BY_CLUSTER:
+    #            value: soemthing

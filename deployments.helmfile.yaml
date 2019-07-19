@@ -74,14 +74,18 @@ releases:
         4. The top level helmfile-environment's "chartConfigs"
             i.e. this would be declared in environments/[helmfile-environment]/chartconfigs.yaml
 
-        5. The global state values "chartConfigs"
+        5. The targetCluster's "chartConfigs" (clusters.[targetCluster].chartConfigs)
+            i.e. this would be declared in: statevalues/001-clusters.yaml or any other HELMFILE_DEPLOY_STATE_VALUES_DIR yaml
+
+        6. The global state values "chartConfigs"
             i.e. this would be declared in: statevalues/000-globals.yaml or any other HELMFILE_DEPLOY_STATE_VALUES_DIR yaml
 
-        6. Note with the sprig "merge" function: see oddities: https://github.com/Masterminds/sprig/issues/120
+        7. Note with the sprig "merge" function: see oddities: https://github.com/Masterminds/sprig/issues/120
 
   */ -}}
   {{ $chartConfigs := dict }}
   {{ $chartConfigs := hasKey $stateVals "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($stateVals | getOrNil "chartConfigs")) $chartConfigs }}
+  {{ $chartConfigs := hasKey $targetCluster "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($targetCluster | getOrNil "chartConfigs")) $chartConfigs }}
   {{ $chartConfigs := hasKey $envVals "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($envVals | getOrNil "chartConfigs")) $chartConfigs }}
   {{ $chartConfigs := hasKey $currEnvironment "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($currEnvironment | getOrNil "chartConfigs")) $chartConfigs }}
   {{ $chartConfigs := hasKey $currContext "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($currContext | getOrNil "chartConfigs")) $chartConfigs }}
@@ -183,7 +187,11 @@ releases:
         replicaCount: {{ $chartConfigs.appdeploy.chartValues.values.replicaCount }}
 
         image:
+          {{ if hasKey $chartConfigs.appdeploy.chartValues.values "image" }}
+            {{ if hasKey $chartConfigs.appdeploy.chartValues.values.image "repository" }}
           repository: {{ $chartConfigs.appdeploy.chartValues.values.image.repository }}
+            {{ end }}
+          {{ end }}
           tag: "{{ $currService.version }}"
 
         {{ if hasKey $chartConfigs.appdeploy.chartValues.values "containerPorts" }}

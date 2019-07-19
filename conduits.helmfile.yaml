@@ -56,14 +56,18 @@ releases:
         3. The top level helmfile-environment's "chartConfigs"
             i.e. this would be declared in environments/[helmfile-environment]/chartconfigs.yaml
 
-        4. The global state values "chartConfigs"
+        4. The targetCluster's "chartConfigs" (clusters.[targetCluster].chartConfigs)
+            i.e. this would be declared in: statevalues/001-clusters.yaml or any other HELMFILE_DEPLOY_STATE_VALUES_DIR yaml
+
+        5. The global state values "chartConfigs"
             i.e. this would be declared in: statevalues/000-globals.yaml or any other HELMFILE_DEPLOY_STATE_VALUES_DIR yaml
 
-        5. Note with the sprig "merge" function: see oddities: https://github.com/Masterminds/sprig/issues/120
+        6. Note with the sprig "merge" function: see oddities: https://github.com/Masterminds/sprig/issues/120
 
   */ -}}
   {{ $chartConfigs := dict }}
   {{ $chartConfigs := hasKey $stateVals "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($stateVals | getOrNil "chartConfigs")) $chartConfigs }}
+  {{ $chartConfigs := hasKey $targetCluster "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($targetCluster | getOrNil "chartConfigs")) $chartConfigs }}
   {{ $chartConfigs := hasKey $envVals "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($envVals | getOrNil "chartConfigs")) $chartConfigs }}
   {{ $chartConfigs := hasKey $currEnvironment "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($currEnvironment | getOrNil "chartConfigs")) $chartConfigs }}
   {{ $chartConfigs := hasKey $currContext "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($currContext | getOrNil "chartConfigs")) $chartConfigs }}
