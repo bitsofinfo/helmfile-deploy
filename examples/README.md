@@ -180,7 +180,7 @@ Ensure all *hogapp* deployment releases: (to see debug output add `--log-level d
 
 Note that `hogapp` has some special `appdeploy` chart overrides defined under [examples/chartvalues/appdeploy/values/hogapp](chartvalues/appdeploy/values/hogapp) if you inspect you will eventually see [stage/stage-qa/values.yaml](chartvalues/appdeploy/values/hogapp/stage/stage-qa/values.yaml) which declares an additional special `env:` variable `SOME_VAR_SPECIFIC_TO_STAGE_QA`
 
-The custom `values` here automatically get picked up because of our `baseValues` definitions in [examples/statevalues/customized-chartconfigs.yaml](tree/master/examples/statevalues/customized-chartconfigs.yaml)
+The custom `values` here automatically get picked up because of our `baseValues` definitions in [examples/statevalues/customized-chartconfigs.yaml](statevalues/customized-chartconfigs.yaml)
 
 Let's verify its applied to the Deployment.
 
