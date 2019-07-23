@@ -116,10 +116,17 @@ releases:
       {{- /*
           ---------------------------------------------------------
           BASE values file references
+          @see statevalues/000-globals.yaml for more info
+          note: "exec" hack can go away when
+          https://github.com/roboll/helmfile/issues/766 is addressed
           ---------------------------------------------------------
       */ -}}
+      {{ $valueBaseParseVars := dict "environmentName" $currEnvironmentName "contextName" $currContextName }}
       {{ range $valueBase := $chartConfigs.appconduits.chartValues.baseValues }}
-      - {{ $chartConfigs.appconduits.chartValues.baseValuesRootDir }}/values/{{$valueBase}}/values.yaml
+        {{ $valueFile := printf "%s/values/%s/values.yaml" $chartConfigs.appconduits.chartValues.baseValuesRootDir (tpl $valueBase $valueBaseParseVars) }}
+        {{ if eq (exec "./fileexists.sh" (list $valueFile)) "true" }}
+      - {{ $valueFile }}
+        {{ end }}
       {{ end }}
 
 

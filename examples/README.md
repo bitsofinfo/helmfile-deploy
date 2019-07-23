@@ -168,15 +168,24 @@ reflects that by overriding the default `containerPorts` it would otherwise end 
 Ensure all *hogapp* deployment releases: (to see debug output add `--log-level debug`)
 ```
 ./helmfile \
---log-level debug \
+  --log-level debug \
   --file deployments.helmfile.yaml \
   --state-values-set targetCluster=minikube \
   --namespace bitsofinfo-apps \
   --selector context=stage-qa \
   --environment hogapp \
   --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=examples/chartvalues/appdeploy \
-  apply
+  template
 ```
+
+Note that `hogapp` has some special `appdeploy` chart overrides defined in its `chartConfigs` located under [environments/hogapp/chartconfigs.yaml](environments/hogapp/chartconfigs.yaml) which declares an additional special `env:` variable. Let's verify its applied to the Deployment.
+
+```
+kubectl describe deployment hogapp-stage-qa-1-0-0 -n bitsofinfo-apps | grep SPECIFIC
+```
+
+You should see `SOME_VAR_SPECIFIC_TO_STAGE_QA: whatever`
+
 
 ```
 curl http://hogapp-stage-qa-2-0-0-80.local

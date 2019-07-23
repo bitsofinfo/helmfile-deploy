@@ -6,6 +6,12 @@ chartConfigs:
   # specified anywhere above
   appdeploy:
     chartValues:
+      baseValues:
+        - testapps
+        - hogapp
+        - hogapp/{{.environmentName}}
+        - hogapp/{{.environmentName}}/{{.contextName}}
+
       values:
         image:
           repository: "bitsofinfo/hogapp"

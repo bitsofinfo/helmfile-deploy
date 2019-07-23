@@ -111,12 +111,15 @@ releases:
       The "chartConfigs.appdeploy" chart configuration can declare one or more "base"
       locations for supplemental "values.yaml" files. Here we list each one located
       within the configured "chartConfigs.appdeploy.chartValues.baseValuesRootDir" path
+
+      @see statevalues/000-globals.yaml for more info
       ---------------------------------------------------------
   */ -}}
   {{ $valuesFiles := dict "files" list }}
-
+  {{ $valueBaseParseVars := dict "environmentName" $currEnvironmentName "contextName" $currContextName "service" $currService }}
   {{ range $valueBase := $chartConfigs.appdeploy.chartValues.baseValues }}
-    {{ $_ := append $valuesFiles.files (printf "%s/values/%s/values.yaml" $chartConfigs.appdeploy.chartValues.baseValuesRootDir $valueBase) | set $valuesFiles "files" }}
+    {{ $parsedValueBase := tpl $valueBase $valueBaseParseVars }}
+    {{ $_ := append $valuesFiles.files (printf "%s/values/%s/values.yaml" $chartConfigs.appdeploy.chartValues.baseValuesRootDir $parsedValueBase) | set $valuesFiles "files" }}
   {{ end }}
 
   {{- /*
@@ -161,10 +164,14 @@ releases:
       {{- /*
           ---------------------------------------------------------
           RENDER: BASE values file references
+          note: "exec" hack can go away when
+          https://github.com/roboll/helmfile/issues/766 is addressed
           ---------------------------------------------------------
       */ -}}
       {{- range $valueFile := $valuesFiles.files }}
+      {{ if eq (exec "./fileexists.sh" (list $valueFile)) "true" }}
       - {{$valueFile}}
+      {{ end }}
       {{ end }}
 
       {{/*

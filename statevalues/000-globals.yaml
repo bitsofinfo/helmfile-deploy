@@ -33,15 +33,21 @@ chartConfigs:
     # the following values.yaml files to exist:
     #
     # - ../custom-configs/myconfigs/chartvalues/appconduits/values/defaults/values.yaml
-    # - ../custom-configs/myconfigs/chartvalues/appconduits/values/app1/values.yaml
-    # - ../custom-configs/myconfigs/chartvalues/appconduits/values/misc/values.yaml
+    # - ../custom-configs/myconfigs/chartvalues/appconduits/values/app1/stage/values.yaml
+    # - ../custom-configs/myconfigs/chartvalues/appconduits/values/misc/stage/stage-qa/values.yaml
+    #
+    # Where in the below example you can reference 2 variables in your baseValues array
+    # items "{{.environmentName}}"= the current environment name for the release being
+    # created and "{{.contextName}}" for the current context name for the release
+    # being created.
+    #
     #---------------
     #chartValues:
     #  baseValuesRootDir: "../custom-configs/myconfigs/chartvalues/appconduits"
     #  baseValues:
     #    - defaults
-    #    - app1
-    #    - misc
+    #    - app1/{{.environmentName}}
+    #    - misc/{{.environmentName}}/{{.contextName}}
     #
     # You should specify the above in another custom values YAML in this same
     # directory OR via the helmfile command line directly such as:
@@ -62,19 +68,29 @@ chartConfigs:
     # declare sets of default values to apply to each release using this chart.
     #
     # EXAMPLE:
-    # For the below configuration the deployments.helmfile.yaml would expect
+    # For the below configuration the conduits.helmfile.yaml would expect
     # the following values.yaml files to exist:
     #
     # - ../custom-configs/myconfigs/chartvalues/appdeploy/values/defaults/values.yaml
-    # - ../custom-configs/myconfigs/chartvalues/appdeploy/values/app1/values.yaml
-    # - ../custom-configs/myconfigs/chartvalues/appdeploy/values/misc/values.yaml
+    # - ../custom-configs/myconfigs/chartvalues/appdeploy/values/app1/stage/values.yaml
+    # - ../custom-configs/myconfigs/chartvalues/appdeploy/values/misc/stage/stage-qa/values.yaml
+    #
+    # Where in the below example you can reference 3 variables in your baseValues array
+    # items "{{.environmentName}}"= the current environment name for the release being
+    # created and "{{.contextName}}" for the current context name for the release
+    # being created. Lastly "{{.service}}" for the current "service" element being
+    # processed in any of your YAML files @:
+    #    $HELMFILE_DEPLOY_ENVIRONMENTS_DIR/environments/<helmfileEnvironmentName/*.yaml
+    #
+    # containing: environments.[environmentName].contexts.[contextName].services[]
+    #
     #---------------
     #chartValues:
     #  baseValuesRootDir: "../custom-configs/myconfigs/chartvalues/appdeploy"
     #  baseValues:
     #    - defaults
-    #    - app1
-    #    - misc
+    #    - app1/{{.environmentName}}
+    #    - misc/{{.environmentName}}/{{.contextName}}/{{.service.name}}
     #
     # You should specify the above in another custom values YAML in this same
     # directory OR via the helmfile command line directly such as:
