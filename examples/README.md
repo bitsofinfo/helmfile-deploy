@@ -175,13 +175,13 @@ Ensure all *hogapp* deployment releases: (to see debug output add `--log-level d
   --selector context=stage-qa \
   --environment hogapp \
   --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=examples/chartvalues/appdeploy \
-  template
+  apply
 ```
 
-Note that `hogapp` has some special `appdeploy` chart overrides defined in its `chartConfigs` located under [environments/hogapp/chartconfigs.yaml](environments/hogapp/chartconfigs.yaml) which declares an additional special `env:` variable. Let's verify its applied to the Deployment.
+Note that `hogapp` has some special `appdeploy` chart overrides defined in its `chartConfigs` located under [environments/hogapp/chartconfigs.yaml](environments/hogapp/chartconfigs.yaml). If you dig down under [examples/chartvalues/appdeploy/values/hogapp](examples/chartvalues/appdeploy/values/hogapp) you will eventually see [stage/stage-qa/values.yaml](stage/stage-qa/values.yaml) which declares an additional special `env:` variable. Let's verify its applied to the Deployment.
 
 ```
-kubectl describe deployment hogapp-stage-qa-1-0-0 -n bitsofinfo-apps | grep SPECIFIC
+kubectl describe deployment hogapp-stage-qa-2-0-0 -n bitsofinfo-apps | grep SPECIFIC
 ```
 
 You should see `SOME_VAR_SPECIFIC_TO_STAGE_QA: whatever`

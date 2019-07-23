@@ -1,0 +1,8 @@
+# Customized values for appdeploy chart
+# https://github.com/bitsofinfo/appdeploy
+# Values here can be overriden or changed
+# at any level below (i.e. in each environment)
+
+env:
+  SOME_VAR_SPECIFIC_TO_STAGE_QA:
+    value: "whatever"
