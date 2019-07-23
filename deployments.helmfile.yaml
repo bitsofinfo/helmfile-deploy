@@ -116,7 +116,7 @@ releases:
       ---------------------------------------------------------
   */ -}}
   {{ $valuesFiles := dict "files" list }}
-  {{ $valueBaseParseVars := dict "environmentName" $currEnvironmentName "contextName" $currContextName "service" $currService }}
+  {{ $valueBaseParseVars := dict "appname" $envVals.appname "classifier" ($envVals | getOrNil "classifier") "environmentName" $currEnvironmentName "contextName" $currContextName "service" $currService }}
   {{ range $valueBase := $chartConfigs.appdeploy.chartValues.baseValues }}
     {{ $parsedValueBase := tpl $valueBase $valueBaseParseVars }}
     {{ $_ := append $valuesFiles.files (printf "%s/values/%s/values.yaml" $chartConfigs.appdeploy.chartValues.baseValuesRootDir $parsedValueBase) | set $valuesFiles "files" }}

@@ -121,7 +121,7 @@ releases:
           https://github.com/roboll/helmfile/issues/766 is addressed
           ---------------------------------------------------------
       */ -}}
-      {{ $valueBaseParseVars := dict "environmentName" $currEnvironmentName "contextName" $currContextName }}
+      {{ $valueBaseParseVars := dict "appname" $envVals.appname "classifier" ($envVals | getOrNil "classifier") "environmentName" $currEnvironmentName "contextName" $currContextName }}
       {{ range $valueBase := $chartConfigs.appconduits.chartValues.baseValues }}
         {{ $valueFile := printf "%s/values/%s/values.yaml" $chartConfigs.appconduits.chartValues.baseValuesRootDir (tpl $valueBase $valueBaseParseVars) }}
         {{ if eq (exec "./fileexists.sh" (list $valueFile)) "true" }}

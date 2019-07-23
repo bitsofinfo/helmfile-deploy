@@ -178,7 +178,11 @@ Ensure all *hogapp* deployment releases: (to see debug output add `--log-level d
   apply
 ```
 
-Note that `hogapp` has some special `appdeploy` chart overrides defined in its `chartConfigs` located under [environments/hogapp/chartconfigs.yaml](environments/hogapp/chartconfigs.yaml). If you dig down under [examples/chartvalues/appdeploy/values/hogapp](examples/chartvalues/appdeploy/values/hogapp) you will eventually see [stage/stage-qa/values.yaml](stage/stage-qa/values.yaml) which declares an additional special `env:` variable. Let's verify its applied to the Deployment.
+Note that `hogapp` has some special `appdeploy` chart overrides defined under [examples/chartvalues/appdeploy/values/hogapp](examples/chartvalues/appdeploy/values/hogapp) if you inspect you will eventually see [stage/stage-qa/values.yaml](stage/stage-qa/values.yaml) which declares an additional special `env:` variable `SOME_VAR_SPECIFIC_TO_STAGE_QA`
+
+The custom `values` here automatically get picked up because of our `baseValues` definitions in [examples/statevalues/customized-chartconfigs.yaml](examples/statevalues/customized-chartconfigs.yaml)
+
+Let's verify its applied to the Deployment.
 
 ```
 kubectl describe deployment hogapp-stage-qa-2-0-0 -n bitsofinfo-apps | grep SPECIFIC
