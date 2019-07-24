@@ -89,7 +89,7 @@ Pre-requisites:
 
 1. have the latest [helm](https://helm.sh/) installed
 1. have the latest [helmfile](https://github.com/roboll/helmfile) installed **>= 0.79.4**
-1. have the [helmfile-diff](helm plugin install https://github.com/databus23/helm-diff) plugin installed
+1. have the [helmfile-diff](https://github.com/databus23/helm-diff) plugin installed
 
 **Clone the helmfile-deploy project**
 
