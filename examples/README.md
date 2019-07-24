@@ -32,6 +32,8 @@ You **MUST** have `helm` installed.
 
 You **MUST** have `helmfile` installed: https://github.com/roboll/helmfile and be using a version **>= 0.79.4**. If the latest version is not available via `brew` (or wherever you want to get it), you can get architecture specific; pre-compiled version binaries here: https://github.com/roboll/helmfile/releases
 
+You **MUST** have the [helmfile-diff](https://github.com/databus23/helm-diff) helm plugin installed
+
 ### yq
 
 You should install `yq` https://github.com/kislyuk/yq (`brew install python-yq`) *(needed for examples only)*
