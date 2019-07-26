@@ -237,29 +237,34 @@ releases:
           {{ end }}
         {{ end }}
 
-        {{ if or (hasKey $chartConfigs.appdeploy.chartValues.values "hooks") (hasKey $currService "hooks") }}
+        {{ if hasKey $chartConfigs.appdeploy.chartValues.values "hooks" }}
         hooks:
 
           {{- /*
-              STANDARD hooks
+              DEFAULT hooks (hooks.default.[n])
 
-              Dump out all non-custom appdeploy "hooks" defined in "chartConfigs" blocks
+              Dump out all non-custom appdeploy "hooks.default" defined in "chartConfigs" blocks
           */ -}}
-          {{ if (hasKey $chartConfigs.appdeploy.chartValues.values "hooks") }}
-{{ toYaml $chartConfigs.appdeploy.chartValues.values.hooks | indent 12 }}
+          {{ if hasKey $chartConfigs.appdeploy.chartValues.values.hooks "default" }}
+{{ toYaml $chartConfigs.appdeploy.chartValues.values.hooks.default | indent 12 }}
           {{ end }}
 
           {{- /*
-            CUSTOM Hooks:
+            CUSTOM Hooks: (hooks.custom.[n])
 
-            Each "service" can declare a "hooks" object, each top-level "key" of it
-            designates the name of the hook and and its "values:" which are consumed
-            here and nested under "hooks.custom"
-
+            Here we manually rewrite it all as w support variable
+            tpl parsing. This is not entirely complete as it does
+            not cover re-rendering all possible vars as the use
+            case at this point is pretty limited whereby the majority
+            of 'custom' entries only configure the options below
+            while the majority of other configuration for them is
+            sourced from baseValues valuesFiles above. Below we
+            only support enabled, variables and the bootstrapSecret
           */ -}}
-          {{ if hasKey $currService "hooks"}}
+
+          {{ if hasKey $chartConfigs.appdeploy.chartValues.values.hooks "custom" }}
           custom:
-            {{ range $currHookName,$currHook := $currService.hooks }}
+            {{ range $currHookName,$currHook := $chartConfigs.appdeploy.chartValues.values.hooks.custom }}
 
             {{ $currHookName }}:
               enabled: {{ $currHook.values.enabled }}
@@ -293,10 +298,10 @@ releases:
                   secretValue: {{ $stateValsCurrHook.bootstrapSecret }}
                       {{ end }}
                     {{ else }}
-                  secretValue: "NO_SECRET_VALUE"
+                  secretValue: "NO_SECRET_VALUE1"
                     {{ end }}
                   {{ else }}
-                  secretValue: "NO_SECRET_VALUE"
+                  secretValue: "NO_SECRET_VALUE2"
                   {{ end }}
             {{ end }}
           {{ end }}
