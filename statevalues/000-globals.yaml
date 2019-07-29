@@ -31,6 +31,7 @@ chartConfigs:
     # EXAMPLE:
     # For the below configuration the conduits.helmfile.yaml would expect
     # the following values.yaml files to exist:
+    # (Assuming: )
     #
     # - ../custom-configs/myconfigs/chartvalues/appconduits/values/defaults/values.yaml
     # - ../custom-configs/myconfigs/chartvalues/appconduits/values/app1/stage/values.yaml
@@ -38,7 +39,7 @@ chartConfigs:
     # - ../custom-configs/myconfigs/chartvalues/appconduits/values/myappname/values.yaml
     #
     # Where in the below example you can reference any of the following 4 variables
-    # in your baseValues array items:
+    # in your "availableBaseValueSets" named set array items:
     #    - {{.appname}}
     #    - {{.classifier}} (if any)
     #    - {{.environmentName}} the current environment name for the release being created
@@ -50,11 +51,23 @@ chartConfigs:
     #---------------
     #chartValues:
     #  baseValuesRootDir: "../custom-configs/myconfigs/chartvalues/appconduits"
-    #  baseValues:
-    #    - defaults
-    #    - app1/{{.environmentName}}
-    #    - misc/{{.environmentName}}/{{.contextName}}
-    #    - {{.appname}}
+    #
+    #  # These are the actual value sets that will be includes out
+    #  # of the "availableBaseValueSets" options below
+    #  baseValueSets:
+    #    - common
+    #    - other
+    #
+    #  # These are the all available named base values sets, that can be referenced
+    #  # by "name/key" above in "baseValueSets"
+    #  availableBaseValueSets:
+    #    common:
+    #     - defaults
+    #    other:
+    #     - app1/{{.environmentName}}
+    #     - misc/{{.environmentName}}/{{.contextName}}
+    #     - {{.appname}}
+    #
     #
     # You should specify the above in another custom values YAML in this same
     # directory OR via the helmfile command line directly such as:
@@ -83,19 +96,19 @@ chartConfigs:
     # EXAMPLE:
     # For the below configuration the conduits.helmfile.yaml would expect
     # the following values.yaml files to exist:
+    # (Assuming: )
     #
     # - ../custom-configs/myconfigs/chartvalues/appdeploy/values/defaults/values.yaml
     # - ../custom-configs/myconfigs/chartvalues/appdeploy/values/app1/stage/values.yaml
     # - ../custom-configs/myconfigs/chartvalues/appdeploy/values/misc/stage/stage-qa/values.yaml
     # - ../custom-configs/myconfigs/chartvalues/appdeploy/values/myappname/values.yaml
     #
-    # Where in the below example you can reference any of the following 5 variables
-    # in your baseValues array items:
+    # Where in the below example you can reference any of the following 4 variables
+    # in your "availableBaseValueSets" named set array items:
     #    - {{.appname}}
     #    - {{.classifier}} (if any)
     #    - {{.environmentName}} the current environment name for the release being created
     #    - {{.contextName}}" for the current context name for the release being created
-    #    - {{.service.[prop]}}" for the current "service" element being processed
     #
     # The values for the above TPL vars are from any of your YAML files @:
     #    $HELMFILE_DEPLOY_ENVIRONMENTS_DIR/environments/<helmfileEnvironmentName/*.yaml
@@ -103,19 +116,33 @@ chartConfigs:
     #---------------
     #chartValues:
     #  baseValuesRootDir: "../custom-configs/myconfigs/chartvalues/appdeploy"
-    #  baseValues:
-    #    - defaults
-    #    - app1/{{.environmentName}}
-    #    - misc/{{.environmentName}}/{{.contextName}}/{{.service.name}}
-    #    - {{.appname}}
-
+    #
+    #  # These are the actual value sets that will be includes out
+    #  # of the "availableBaseValueSets" options below
+    #  baseValueSets:
+    #    - common
+    #    - other
+    #
+    #  # These are the all available named base values sets, that can be referenced
+    #  # by "name/key" above in "baseValueSets"
+    #  availableBaseValueSets:
+    #    common:
+    #     - defaults
+    #    other:
+    #     - app1/{{.environmentName}}
+    #     - misc/{{.environmentName}}/{{.contextName}}
+    #     - {{.appname}}
+    #
+    #
     # You should specify the above in another custom values YAML in this same
     # directory OR via the helmfile command line directly such as:
     #
     # --state-values-set \
     #     chartConfigs.appdeploy.chartValues.baseValuesRootDir=[relative path to baseValues root dir]
     #
+    #
     ## You can also specify in-line custom "appdeploy" chart values directly
+    #
     #values:
     #  app:
     #    classifier: "something"
@@ -131,12 +158,12 @@ chartConfigs:
 releaseConfigs:
 
   # Configs specific to appdeploy release generation
-  # i.e. consumed in: deployments.helmfile.yaml
+  # i.e. consumed in: @see deployments.helmfile.yaml
   deployments:
     # nothing yet
 
   # Configs specific to appconduits release generation
-  # i.e. consumed in: conduits.helmfile.yaml
+  # i.e. consumed in: @see conduits.helmfile.yaml
   conduits:
 
     # The "service" selector label "names" (i.e. keys) for standard

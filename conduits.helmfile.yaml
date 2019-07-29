@@ -25,6 +25,7 @@ releases:
 
   {{- /*
       The target "cluster"
+      Note: simpler syntax should just be: https://github.com/Masterminds/sprig/issues/151
   */ -}}
   {{- $targetCluster := (pick $stateVals.clusters $stateVals.targetCluster) | values | first }}
 
@@ -122,10 +123,19 @@ releases:
           ---------------------------------------------------------
       */ -}}
       {{ $valueBaseParseVars := dict "appname" $envVals.appname "classifier" ($envVals | getOrNil "classifier") "environmentName" $currEnvironmentName "contextName" $currContextName }}
-      {{ range $valueBase := $chartConfigs.appconduits.chartValues.baseValues }}
-        {{ $valueFile := printf "%s/values/%s/values.yaml" $chartConfigs.appconduits.chartValues.baseValuesRootDir (tpl $valueBase $valueBaseParseVars) }}
-        {{ if eq (exec "./fileexists.sh" (list $valueFile)) "true" }}
+
+      {{- /* Get list of all named "sets" we actually want to use */ -}}
+      {{ range $baseValueSetName := $chartConfigs.appconduits.chartValues.baseValueSets }}
+
+        {{- /* Load the actual referenced set by name from 'availableBaseValueSets' */ -}}
+        {{ $baseValues := (pick $chartConfigs.appconduits.chartValues.availableBaseValueSets $baseValueSetName) | values | first }}
+
+        {{- /* For each one, lets add it to the list of overall values files we will reference below */ -}}
+        {{ range $valueBase := $baseValues }}
+          {{ $valueFile := printf "%s/values/%s/values.yaml" $chartConfigs.appconduits.chartValues.baseValuesRootDir (tpl $valueBase $valueBaseParseVars) }}
+          {{ if eq (exec "./fileexists.sh" (list $valueFile)) "true" }}
       - {{ $valueFile }}
+          {{ end }}
         {{ end }}
       {{ end }}
 

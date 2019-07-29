@@ -103,7 +103,7 @@ kubectl describe deployment catapp-stage-qa-2-0-0 -n bitsofinfo-apps | grep INGR
 
 You should see `INGRESS_CONTROLLER_URL:  https://bitsofinfo-traefik.test.local`
 
-### So... how can I just see what will be generated?
+### So... how can I just see what k8s YAML will be generated?
 
 If you just want to see the raw YAML that will be produced and sent to Kubernetes you can use the helmfile `template` argument as follows. (Here we pipe it to `python-yq` to get it cleaned up/formatted better)
 
@@ -117,6 +117,23 @@ If you just want to see the raw YAML that will be produced and sent to Kubernete
   --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=examples/chartvalues/appdeploy \
   --quiet \
   template | yq --yaml-output .
+```
+
+
+### and... how can I see everything generated, including the helmfile releases?
+
+If you just want to see all the raw helmfile `releases:` AND all k8s YAML that will be produced you again can use the helmfile `template` argument as follows with a few modifications for log level etc.
+
+```
+./helmfile \
+  --log-level debug \
+  --file deployments.helmfile.yaml \
+  --state-values-set targetCluster=minikube \
+  --namespace bitsofinfo-apps \
+  --selector context=stage-qa \
+  --environment catapp \
+  --state-values-set chartConfigs.appdeploy.chartValues.baseValuesRootDir=examples/chartvalues/appdeploy \
+  template
 ```
 
 Great. Let's move on.
@@ -182,7 +199,7 @@ Ensure all *hogapp* deployment releases: (to see debug output add `--log-level d
 
 Note that `hogapp` has some special `appdeploy` chart overrides defined under [examples/chartvalues/appdeploy/values/hogapp](chartvalues/appdeploy/values/hogapp) if you inspect you will eventually see [stage/stage-qa/values.yaml](chartvalues/appdeploy/values/hogapp/stage/stage-qa/values.yaml) which declares an additional special `env:` variable `SOME_VAR_SPECIFIC_TO_STAGE_QA`
 
-The custom `values` here automatically get picked up because of our `baseValues` definitions in [examples/statevalues/customized-chartconfigs.yaml](statevalues/customized-chartconfigs.yaml)
+The custom `values` here automatically get picked up because of our `availableBaseValueSets` and `baseValueSets` definitions in [examples/statevalues/customized-chartconfigs.yaml](statevalues/customized-chartconfigs.yaml)
 
 Let's verify its applied to the Deployment.
 

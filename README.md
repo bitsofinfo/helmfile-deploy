@@ -66,7 +66,7 @@ When you execute the `helmfile` command against a *helmfile-deploy provided helm
 
 **You may be asking... "where do all the other chart values come from??!"**
 
-Good question. Each application's helmfile *environment* can also declare its own `chartConfigs.appdeploy` and/or `chartConfigs.appconduits` sections. Here is where you can tailor `chartValues` for each app directly inline and even reference shared `baseValues` per chart for common configuration shared across many apps. `chartConfigs` blocks can be defined and/or overridden and supplemented at various levels all the way down to the `service` level. See examples [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/examples/environments/catapp/chartconfigs.yaml), [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/examples/statevalues/customized-chartconfigs.yaml), [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/examples/chartvalues/appdeploy/values/testapps/values.yaml) and [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/statevalues/000-globals.yaml). For more details on this see: https://github.com/bitsofinfo/helmfile-deploy/blob/master/statevalues/000-globals.yaml
+Good question. Each application's helmfile *environment* can also declare its own `chartConfigs.appdeploy` and/or `chartConfigs.appconduits` sections. Here is where you can tailor `chartValues` for each app directly inline and even reference shared `baseValueSets` (that reference `availableBaseValueSets`) per chart for common configuration shared across many apps. `chartConfigs` blocks can be defined and/or overridden and supplemented at various levels all the way down to the `service` level. See examples [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/examples/environments/catapp/chartconfigs.yaml), [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/examples/statevalues/customized-chartconfigs.yaml), [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/examples/chartvalues/appdeploy/values/testapps/values.yaml) and [here](https://github.com/bitsofinfo/helmfile-deploy/blob/master/statevalues/000-globals.yaml). For more details on this see: https://github.com/bitsofinfo/helmfile-deploy/blob/master/statevalues/000-globals.yaml
 
 ## <a id="provide"></a>What does helmfile-deploy provide?
 
@@ -88,7 +88,7 @@ Note: before you try your own custom configuration its highly recommended that [
 Pre-requisites:
 
 1. have the latest [helm](https://helm.sh/) installed
-1. have the latest [helmfile](https://github.com/roboll/helmfile) installed **>= 0.79.4**
+1. have the latest [helmfile](https://github.com/roboll/helmfile) installed **>= 0.80.2**
 1. have the latest [helmfile-diff](https://github.com/databus23/helm-diff) plugin installed
 
 **Clone the helmfile-deploy project**
@@ -111,7 +111,7 @@ mkdir -p myconfigs/environments
 mkdir -p myconfigs/statevalues
 ```
 
-These are optional, but handy if you will be taking advantage of the `chartConfigs.[chartname].chartValues.baseValues` functionality. See [statevalues/000-globals.yaml](statevalues/000-globals.yaml) for more info.
+These are optional, but handy if you will be taking advantage of the `chartConfigs.[chartname].chartValues.baseValueSets` functionality. See [statevalues/000-globals.yaml](statevalues/000-globals.yaml) for more info.
 ```
 mkdir -p myconfigs/chartvalues/appdeploy
 mkdir -p myconfigs/chartvalues/appconduits

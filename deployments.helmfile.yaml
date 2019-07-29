@@ -23,6 +23,7 @@ releases:
 
   {{- /*
       The target "cluster"
+      Note: simpler syntax should just be: https://github.com/Masterminds/sprig/issues/151
   */ -}}
   {{- $targetCluster := (pick $stateVals.clusters $stateVals.targetCluster) | values | first }}
 
@@ -108,18 +109,29 @@ releases:
       ---------------------------------------------------------
       Build BASE values file references -> $valuesFiles
 
-      The "chartConfigs.appdeploy" chart configuration can declare one or more "base"
-      locations for supplemental "values.yaml" files. Here we list each one located
-      within the configured "chartConfigs.appdeploy.chartValues.baseValuesRootDir" path
+      The "chartConfigs.appdeploy" chart configuration can declare one or more named
+      "availableBaseValueSets" which define sets of supplemental "values.yaml" files.
+      Here we inspect the "baseValuesSets" list of referenced "set" names to determine
+      the actual list of "values.yaml" files to apply to the chart which are ultimately
+      located under the configured "chartConfigs.appdeploy.chartValues.baseValuesRootDir" path
 
       @see statevalues/000-globals.yaml for more info
       ---------------------------------------------------------
   */ -}}
   {{ $valuesFiles := dict "files" list }}
   {{ $valueBaseParseVars := dict "appname" $envVals.appname "classifier" ($envVals | getOrNil "classifier") "environmentName" $currEnvironmentName "contextName" $currContextName "service" $currService }}
-  {{ range $valueBase := $chartConfigs.appdeploy.chartValues.baseValues }}
-    {{ $parsedValueBase := tpl $valueBase $valueBaseParseVars }}
-    {{ $_ := append $valuesFiles.files (printf "%s/values/%s/values.yaml" $chartConfigs.appdeploy.chartValues.baseValuesRootDir $parsedValueBase) | set $valuesFiles "files" }}
+
+  {{- /* Get list of all named "sets" we actually want to use */ -}}
+  {{ range $baseValueSetName := $chartConfigs.appdeploy.chartValues.baseValueSets }}
+
+    {{- /* Load the actual referenced set by name from 'availableBaseValueSets' */ -}}
+    {{ $baseValues := (pick $chartConfigs.appdeploy.chartValues.availableBaseValueSets $baseValueSetName) | values | first }}
+
+    {{- /* For each one, lets add it to the list of overall values files we will reference below */ -}}
+    {{ range $valueBase := $baseValues }}
+      {{ $parsedValueBase := tpl $valueBase $valueBaseParseVars }}
+      {{ $_ := append $valuesFiles.files (printf "%s/values/%s/values.yaml" $chartConfigs.appdeploy.chartValues.baseValuesRootDir $parsedValueBase) | set $valuesFiles "files" }}
+    {{ end }}
   {{ end }}
 
   {{- /*
