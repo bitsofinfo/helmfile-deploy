@@ -187,7 +187,6 @@ reflects that by overriding the default `containerPorts` it would otherwise end 
 Ensure all *hogapp* deployment releases: (to see debug output add `--log-level debug`)
 ```
 ./helmfile \
-  --log-level debug \
   --file deployments.helmfile.yaml \
   --state-values-set targetCluster=minikube \
   --namespace bitsofinfo-apps \
@@ -231,12 +230,19 @@ Ensure all *hogapp* conduit releases: (to see debug output add `--log-level debu
   apply
 ```
 
-|Expect|target|
-|---|---|
-|hogapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://hogapp-mixed.mydomain.com`|
-|hogapp:3.0.0|`curl http://hogapp-current.mydomain.com`|
-|hogapp:2.0.0|`curl http://hogapp-previous.mydomain.com`|
-|hogapp:4.0.0|`curl http://hogapp-next.mydomain.com`|
+**Note** that [hogapp's stage-qa config](environments/hogapp/stage-qa.yaml) leverages unique edge-case example that lets us generate dynamic conduits with dynamic names/fqdns inclusive of the declared unique backend `ports`. You can take a look at [environments/hogapp/stage-qa-multiport.yaml](environments/hogapp/stage-qa.yaml) for more information.
+
+In any case after applying the above, you can expect the following to work
+
+|Expect|target|explicit backend-port|
+|---|---|---|
+|hogapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://hogapp-mixed-443.mydomain.com`|443|
+|hogapp:4.0.0 or 3.0.0 or 2.0.0|`curl http://hogapp-mixed-80.mydomain.com`|80|
+|hogapp:3.0.0|`curl http://hogapp-current-443.mydomain.com`|443|
+|hogapp:3.0.0|`curl http://hogapp-current-80.mydomain.com`|80|
+|hogapp:2.0.0|`curl http://hogapp-previous-443.mydomain.com`|443|
+|hogapp:2.0.0|`curl http://hogapp-previous-80.mydomain.com`|80|
+|hogapp:4.0.0|`curl http://hogapp-next-443.mydomain.com`|443|
 
 
 |Expect|target|
@@ -249,6 +255,8 @@ Ensure all *hogapp* conduit releases: (to see debug output add `--log-level debu
 |PINK hogapp:3.0.0|`curl http://animals-current.mydomain.com/pink/`|
 |BROWN hogapp:2.0.0|`curl http://animals-previous.mydomain.com/brown/`|
 |PINK hogapp:2.0.0|`curl http://animals-previous.mydomain.com/pink/`|
+
+
 
 ## Next lets do the same for dogapp
 

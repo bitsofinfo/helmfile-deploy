@@ -1,5 +1,10 @@
 appname: dogapp
 
+# See ../hogapp/stage-qa.yaml for more info on this
+ports:
+  - port: 80
+    tls: false
+
 environments:
   stage:
 

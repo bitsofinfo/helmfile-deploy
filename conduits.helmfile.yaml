@@ -174,8 +174,37 @@ releases:
                 {{ end }}
 
               ingress:
+
+                {{/*
+                  For each "targetedPort" we generate a unique "appconduits"
+                  "ingressname-[classifier]-[targetedport]" that contains
+                  the appconduits ingress mappings array
+
+                  By default the targetedPorts is the FIRST known port
+                  that is listed in the top level "$ports" list
+
+                */ -}}
+                {{- $targetedPorts := dict "ports" (list (first $ports)) -}}
+
                 {{ range $ingressName, $ingress := $currContext.ingress }}
-                  {{- range $port := $ports }}
+
+                  {{/*
+                    Does the current ingress stanza declare its own "targetedPorts"?
+                    If so we will utilize that...
+                   */ -}}
+                  {{ if hasKey $ingress "targetedPorts" }}
+                    {{ $_ := set $targetedPorts "ports" list }}
+                    {{ range $p := $ports }}
+                      {{ if has $p.port $ingress.targetedPorts }}
+                        {{ $_ := set $targetedPorts "ports" (append $targetedPorts.ports $p) }}
+                      {{ end  }}
+                    {{ end }}
+                  {{ end }}
+
+                  {{/*
+                    Now for each port we will generate a unique appconduits "ingress" declaration
+                  */ -}}
+                  {{- range $port := $targetedPorts.ports }}
                     {{ $ingressName := printf "%s-%sREMOVEME-%d" $ingressName $classifier $port.port }}
                     {{- $ingressName := $ingressName | replace "-REMOVEME" "" }}
                     {{- $ingressName := $ingressName | replace "REMOVEME" "" }}

@@ -1,5 +1,66 @@
 appname: hogapp
 
+#
+# the "ports" section
+#
+# Optional and if not declared, the default is set to one port of 80 w/ tls:false
+# @see conduits.helmfile.yaml
+#
+# For ~99% of all uses cases this should RARELY be more than one port
+# listed as it is the target port that all "appconduits" generated Services
+# and Ingresses will route traffic to.
+#
+# The "ports" section has a direct impact on the generated "values" for each
+# "appconduits" chart helm release that gets created by conduits.helmfile.yaml.
+# By default, this is entirely optional and will default to one port of 80 w/ tls:false
+#
+# When specified, for each release, by default the FIRST port listed below will yield a unique
+# appconduits "service" declaration for the appconduits chart, where each generated
+# appconduits values "service.[name]" will be equal to your services.[N].[name]-[ports.[currentPort.port] below.
+#
+# Correspondingly by default each listed "Ingress" below will yield a serviceBinding
+# that points back to its referenced serviceBindings.[servicename]-[port]. (i.e. the
+# first port only in the list below by default)
+#
+# How do you get it to generate a unique ingress per-port and not just the first
+# one? To do this you can specify the "ingress.[ingressname].targetedPorts" property
+# to be equal to an list or ports (i.e. ingress.[ingressname].targetedPorts: [port1,port2, etc])
+# Setting this will generate a unique ingress per each port listed pointing back
+# to the matching named "service-[port]"
+#
+# When enabling a "ingress.[ingressname].targetedPorts=[]", it is HIGHLY RECOMMENDED that each
+# "hosts:" entry per enclosed ingress mapping, reference a [[#port]] variable directly,
+# which will be replaced w/ each port below as conduits.helmfile.yaml iterates
+# over the ports... failing to do this can result in unexpected behavior,
+# read further below...
+#
+# WARNING!!!:
+# -----------------
+# ITS CRITICAL to note that enabling more than ONE "ingress.[ingressname].targetedPorts=[]"
+# below generates a unique IngressName-[port]->Service pathway for each "ingress" below.
+# For example, if you list 2 ports below and declare ONE ingress mapping below
+# that lists both ports in "ingress.[ingressname].targetedPorts" this will yield 2
+# actual k8s Ingress objects. The impact of this is that if you list any "hosts:"
+# entries below with FQDNs that do not reference the [[#port]] variable as descibed
+# above, you will end up with MULTIPLE k8s "Ingress" objects created referencing the same
+# host FQDNs pointing to different k8s Services on the backend.... and the result of such
+# a configuration and how it will behave at runtime is entirely dependant upon how your
+# Ingress controller merges/manages such a scenario. Its could be last man wins, sending traffic
+# to multiple un-intended backend Services etc.
+#
+# See the ingress.[name].mappings below
+#
+# The easiest way to understand what is going on is run helmile with
+# `log-level debug` and the `template` argument
+#
+#
+ports:
+  - port: 80
+    tls: false
+  - port: 443
+    tls: true
+
+
 environments:
   stage:
 
@@ -31,6 +92,11 @@ environments:
 
         ingress:
           animals-mixed:
+            # (by default this will bind to Service:80) as 80
+            # is the first port listed in "ports:" above
+            # By default this will generate a single Ingress
+            # mapped to a single service for port 80
+            # targetedPorts: [80]
             mappings:
               - name: paths
                 labels:
@@ -46,6 +112,11 @@ environments:
                   next: "30%"
 
           animals-current:
+            # (by default this will bind to Service:80) as 80
+            # is the first port listed in "ports:" above
+            # By default this will generate a single Ingress
+            # mapped to a single service for port 80
+            # targetedPorts: [80]
             mappings:
               - name: paths
                 labels:
@@ -59,6 +130,11 @@ environments:
                   current: "100%"
 
           animals-previous:
+            # (by default this will bind to Service:80) as 80
+            # is the first port listed in "ports:" above
+            # By default this will generate a single Ingress
+            # mapped to a single service for port 80
+            # targetedPorts: [80]
             mappings:
               - name: paths
                 labels:
@@ -72,6 +148,11 @@ environments:
                   previous: "100%"
 
           animals-next:
+            # (by default this will bind to Service:80) as 80
+            # is the first port listed in "ports:" above
+            # By default this will generate a single Ingress
+            # mapped to a single service for port 80
+            # targetedPorts: [80]
             mappings:
               - name: paths
                 labels:
@@ -85,43 +166,67 @@ environments:
                   next: "100%"
 
           mixed:
+            # Here since we set this to an explicit list of
+            # ports, this will generate a unique ingress per-port
+            # that points to the corresponding service for that port
+            # and it opens up the ability to use the [[#port]] variable
+            # reference in each "host" name below. See WARNING above!
+            targetedPorts: [80,443]
             mappings:
               - name: all
                 labels:
                   bitsofinfo-ingress: "yes"
                 hosts:
-                  - name: "hogapp-mixed.mydomain.com"
+                  - name: "hogapp-mixed-[[#port]].mydomain.com"
                 serviceBindings:
                   current: "40%"
                   previous: "30%"
                   next: "30%"
 
           current:
+            # Here since we set this to an explicit list of
+            # ports, this will generate a unique ingress per-port
+            # that points to the corresponding service for that port
+            # and it opens up the ability to use the [[#port]] variable
+            # reference in each "host" name below. See WARNING above!
+            targetedPorts: [80,443]
             mappings:
               - name: all
                 labels:
                   bitsofinfo-ingress: "yes"
                 hosts:
-                  - name: "hogapp-current.mydomain.com"
+                  - name: "hogapp-current-[[#port]].mydomain.com"
                 serviceBindings:
                   current: "100%"
 
           previous:
+            # Here since we set this to an explicit list of
+            # ports, this will generate a unique ingress per-port
+            # that points to the corresponding service for that port
+            # and it opens up the ability to use the [[#port]] variable
+            # reference in each "host" name below. See WARNING above!
+            targetedPorts: [80,443]
             mappings:
               - name: all
                 labels:
                   bitsofinfo-ingress: "yes"
                 hosts:
-                  - name: "hogapp-previous.mydomain.com"
+                  - name: "hogapp-previous-[[#port]].mydomain.com"
                 serviceBindings:
                   previous: "100%"
 
           next:
+            # Here since we set this to an explicit list of
+            # ports, this will generate a unique ingress per-port
+            # that points to the corresponding service for that port
+            # and it opens up the ability to use the [[#port]] variable
+            # reference in each "host" name below. See WARNING above!
+            targetedPorts: [80,443]
             mappings:
               - name: all
                 labels:
                   bitsofinfo-ingress: "yes"
                 hosts:
-                  - name: "hogapp-next.mydomain.com"
+                  - name: "hogapp-next-[[#port]].mydomain.com"
                 serviceBindings:
                   next: "100%"
