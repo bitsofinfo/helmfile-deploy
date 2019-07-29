@@ -230,7 +230,7 @@ Ensure all *hogapp* conduit releases: (to see debug output add `--log-level debu
   apply
 ```
 
-**Note** that [hogapp's stage-qa config](environments/hogapp/stage-qa.yaml) leverages unique edge-case example that lets us generate dynamic conduits with dynamic names/fqdns inclusive of the declared unique backend `ports`. You can take a look at [environments/hogapp/stage-qa-multiport.yaml](environments/hogapp/stage-qa.yaml) for more information.
+**Note** that [hogapp's stage-qa config](environments/hogapp/stage-qa.yaml) leverages unique edge-case example that lets us generate dynamic conduits with dynamic names/fqdns inclusive of the declared unique backend `ports`. You can take a look at [environments/hogapp/stage-qa.yaml](environments/hogapp/stage-qa.yaml) for more information.
 
 In any case after applying the above, you can expect the following to work
 
