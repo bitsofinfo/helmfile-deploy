@@ -13,6 +13,7 @@ repositories:
 
 helmDefaults:
   tillerNamespace: {{ $targetCluster.helmDefaults.tillerNamespace }}
+  tillerless: {{ $targetCluster.helmDefaults.tillerless }}
   kubeContext: {{ $targetCluster.helmDefaults.kubeContext }}
   verify: false
   wait: {{ $targetCluster.helmDefaults.wait }}
