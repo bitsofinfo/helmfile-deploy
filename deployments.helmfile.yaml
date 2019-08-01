@@ -55,7 +55,7 @@ releases:
         "{{ .helmfile.[path] }}" If ".helmfile" is NOT present the "{{bracketed}}" will
       be left alone and assumed to be consumable by the chart in the release
   */ -}}
-  {{- $helmfileVarsDict := dict "helmfile" (dict "targetCluster" $targetCluster "envVals" $envVals "stateVals" $stateVals "namespace" $namespace "service" $currService "context" $currContext "environment" $currEnvironment) }}
+  {{- $helmfileVarsDict := dict "helmfile" (dict "clusters" $stateVals.clusters "targetCluster" $targetCluster "envVals" $envVals "stateVals" $stateVals "namespace" $namespace "service" $currService "context" $currContext "environment" $currEnvironment) }}
 
   {{- /*
       ---------------------------------------------------------

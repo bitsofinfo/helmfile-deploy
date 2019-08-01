@@ -20,7 +20,7 @@ chartConfigs:
 
   appconduits:
     chart: bitsofinfo-appconduits/appconduits
-    version: 1.0.9
+    version: 1.0.10
     #
     # Further chart values customization:
     #
