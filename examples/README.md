@@ -1,6 +1,6 @@
 # Example
 
-Below is a basic example. Slack install/upgrade alerts will be sent to the https://bitsofinfo.slack.com `#bitsofinfo-dev` channel ([self signup to channel](https://join.slack.com/t/bitsofinfo/shared_invite/enQtNjY1ODIzNTkyMDMyLTEzZGUwNzExOWYyMmZmMTQyYWZiYzJjYTJkNGI3MWMzNzQ3MTE2NzVhM2Q1ZjE4OGViYjA1NGY4MzdiZDg3ZWI))
+Below is a basic example. Slack install/upgrade alerts will be sent to the https://bitsofinfo.slack.com `#bitsofinfo-dev` channel ([self signup to channel](https://join.slack.com/t/bitsofinfo/shared_invite/enQtNzE1OTM1MDY5MDYwLTk4MTc3MjA4Y2YwNjFkYjRlYjZjZWMyNWExY2QxN2JmMmMyOGViMzYzYmE5NjcyOGE5ZWFjYTM5MmVjNzUxMjc))
 
 This should be enough to get your feet wet.
 
