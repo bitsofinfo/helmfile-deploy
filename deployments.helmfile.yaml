@@ -44,11 +44,29 @@ releases:
       in yaml files under environments/[helmfile-environment]/* we loop over
       each environment's context(s) declared "services", one by one
       and generate a "appdeploy" helmfile "release"
+
+      NOTE! since the environment's context yaml file can potentially
+      list the same service.version across multiple service elements
+      we keep track of this as to not create duplicate releases.
+
+      Why can a "version" be declared across multiple "services"?
+      Because "services" are just named things we can route traffic
+      to and the conduits.helmfile.yaml template also processes the same
+      file. In this case the "version" just nets diff selectors
+      on conduit services. In any case, it is a legit case and permitted
       ---------------------------------------------------------
   */ -}}
+
+  {{ $versionsReleased := list }}
+
   {{- range $currEnvironmentName,$currEnvironment := $envVals.environments }}
   {{- range $currContextName,$currContext := $currEnvironment.contexts }}
   {{- range $currService := $currContext.services }}
+
+  {{- /* version check */ -}}
+  {{ if not (has $currService.version $versionsReleased) }}
+
+  {{ $versionsReleased = append $versionsReleased $currService.version }}
 
   {{- /*
       Used by `tpl` variable parsing below. The caller can specify tpl parsed values i.e.
@@ -320,7 +338,7 @@ releases:
         {{ end }}
 
 
-
-  {{ end }}    {{- /* END: range $currService := $currContext.services */ -}}
+  {{ end }}   {{- /* END: if not has $currService.version $versionsReleased */ -}}
+  {{ end }}   {{- /* END: range $currService := $currContext.services */ -}}
   {{ end }}   {{- /* END: range $currContextName,$currContext := $currEnvironment.contexts */ -}}
   {{ end }}   {{- /* END: range $currEnvironmentName,$currEnvironment := $envVals.environments */ -}}
