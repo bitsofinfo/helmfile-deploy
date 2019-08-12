@@ -57,10 +57,9 @@ releases:
       ---------------------------------------------------------
   */ -}}
 
-  {{ $versionsReleased := list }}
-
   {{- range $currEnvironmentName,$currEnvironment := $envVals.environments }}
   {{- range $currContextName,$currContext := $currEnvironment.contexts }}
+  {{ $versionsReleased := list }}
   {{- range $currService := $currContext.services }}
 
   {{- /* version check */ -}}
@@ -338,7 +337,7 @@ releases:
         {{ end }}
 
 
-  {{ end }}   {{- /* END: if not has $currService.version $versionsReleased */ -}}
   {{ end }}   {{- /* END: range $currService := $currContext.services */ -}}
+  {{ end }}   {{- /* END: if not has $currService.version $versionsReleased */ -}}
   {{ end }}   {{- /* END: range $currContextName,$currContext := $currEnvironment.contexts */ -}}
   {{ end }}   {{- /* END: range $currEnvironmentName,$currEnvironment := $envVals.environments */ -}}
