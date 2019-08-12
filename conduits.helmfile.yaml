@@ -150,6 +150,12 @@ releases:
       */ -}}
       - conduitname: "{{ $envVals.appname }}"
         classifier: "{{ $classifier }}"
+
+        {{ if hasKey $chartConfigs.appconduits.chartValues.values "ingress" }}
+        ingress:
+{{ toYaml $chartConfigs.appconduits.chartValues.values.ingress | indent 10 }}
+        {{ end }}
+
         conduits:
           contexts:
             {{ $currContextName }}:
