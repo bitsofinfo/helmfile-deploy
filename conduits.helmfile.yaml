@@ -157,7 +157,7 @@ releases:
         ingress:
 {{ toYaml $chartConfigs.appconduits.chartValues.values.ingress | indent 10 }}
           {{ end }}
-          
+
         {{ end }}
 
         conduits:
@@ -240,6 +240,13 @@ releases:
                           {{- $hostName := $hostName | replace "-." "." -}}
                         - name: "{{ $hostName }}"
                           dns: {{ (eq ((getOrNil "dns" $host) | toString) "false") | ternary false true }}
+                          {{ if hasKey $host "tls" }}
+                          tls:
+                            enabled: {{ (eq ((getOrNil "enabled" $host.tls) | toString) "true") | ternary true false }}
+                            {{ if hasKey $host.tls "secretName" }}
+                            secretName: {{ getOrNil "secretName" $host.tls }}
+                            {{ end }}
+                          {{ end }}
                         {{ end }}
                       {{ if hasKey $mapping "paths" }}
                       paths:
