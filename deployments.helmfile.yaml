@@ -239,11 +239,11 @@ releases:
         ingress:
           {{ if hasKey $chartConfigs.appdeploy.chartValues.values.ingress "dns" }}
           dns:
-            {{ toYaml $chartConfigs.appdeploy.chartValues.values.ingress.dns | indent 14 }}
+            {{ toYaml $chartConfigs.appdeploy.chartValues.values.ingress.dns | indent 0 }}
           {{ end }}
           {{ if hasKey $chartConfigs.appdeploy.chartValues.values.ingress "tls" }}
           tls:
-            {{ toYaml $chartConfigs.appdeploy.chartValues.values.ingress.tls | indent 14 }}
+            {{ toYaml $chartConfigs.appdeploy.chartValues.values.ingress.tls | indent 0 }}
           {{ end }}
           {{ if hasKey $chartConfigs.appdeploy.chartValues.values.ingress "metadata" }}
           metadata:

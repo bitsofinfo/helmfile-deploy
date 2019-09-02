@@ -166,11 +166,11 @@ releases:
         ingress:
           {{ if hasKey $chartConfigs.appconduits.chartValues.values.ingress "dns" }}
           dns:
-            {{ toYaml $chartConfigs.appconduits.chartValues.values.ingress.dns | indent 14 }}
+            {{ toYaml $chartConfigs.appconduits.chartValues.values.ingress.dns | indent 0 }}
           {{ end }}
           {{ if hasKey $chartConfigs.appconduits.chartValues.values.ingress "tls" }}
           tls:
-            {{ toYaml $chartConfigs.appconduits.chartValues.values.ingress.tls | indent 14 }}
+            {{ toYaml $chartConfigs.appconduits.chartValues.values.ingress.tls | indent 0 }}
           {{ end }}
           {{ if hasKey $chartConfigs.appconduits.chartValues.values.ingress "metadata" }}
           metadata:
