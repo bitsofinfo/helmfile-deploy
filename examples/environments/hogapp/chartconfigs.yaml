@@ -24,7 +24,7 @@ chartConfigs:
 
         # here is an example (has no actual effect on running app)
         # of referencing "helmfile" state value data defined
-        # in examples/values/customized-chartconfigs.yaml
+        # in examples/values/customized-cluster.yaml
         env:
           INGRESS_CONTROLLER_URL:
             value: "{{.helmfile.targetCluster.ingressControllers.default.url}}"

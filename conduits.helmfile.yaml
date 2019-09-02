@@ -43,6 +43,14 @@ releases:
 
 
   {{- /*
+      Used by `tpl` variable parsing below. The caller can specify tpl parsed values i.e.
+        "{{ .helmfile.[path] }}" If ".helmfile" is NOT present the "{{bracketed}}" will
+      be left alone and assumed to be consumable by the chart in the release
+  */ -}}
+  {{- $helmfileVarsDict := dict "helmfile" (dict "clusters" $stateVals.clusters "targetCluster" $targetCluster "envVals" $envVals "stateVals" $stateVals "namespace" $namespace "context" $currContext "environment" $currEnvironment) }}
+
+
+  {{- /*
       ---------------------------------------------------------
       "chartConfigs"
       ---------------------------------------------------------
@@ -153,12 +161,47 @@ releases:
 
         {{ if hasKey $chartConfigs.appconduits.chartValues "values" }}
 
-          {{ if hasKey $chartConfigs.appconduits.chartValues.values "ingress" }}
+
+        {{ if hasKey $chartConfigs.appconduits.chartValues.values "ingress" }}
         ingress:
-{{ toYaml $chartConfigs.appconduits.chartValues.values.ingress | indent 10 }}
+          {{ if hasKey $chartConfigs.appconduits.chartValues.values.ingress "dns" }}
+          dns:
+            {{ toYaml $chartConfigs.appconduits.chartValues.values.ingress.dns | indent 14 }}
           {{ end }}
+          {{ if hasKey $chartConfigs.appconduits.chartValues.values.ingress "tls" }}
+          tls:
+            {{ toYaml $chartConfigs.appconduits.chartValues.values.ingress.tls | indent 14 }}
+          {{ end }}
+          {{ if hasKey $chartConfigs.appconduits.chartValues.values.ingress "metadata" }}
+          metadata:
+            {{ if hasKey $chartConfigs.appconduits.chartValues.values.ingress.metadata "labels" }}
+            labels:
+              {{ range $lblobj := $chartConfigs.appconduits.chartValues.values.ingress.metadata.labels }}
+              - name: "{{$lblobj.name}}"
+                  {{ if contains ".helmfile" $lblobj.value }}
+                value: "{{ tpl $lblobj.value $helmfileVarsDict }}"
+                  {{ else }}
+                value: "{{$lblobj.value}}"
+                  {{ end }}
+              {{ end }}
+            {{ end }}
+            {{ if hasKey $chartConfigs.appconduits.chartValues.values.ingress.metadata "annotations" }}
+            annotations:
+              {{ range $annobj := $chartConfigs.appconduits.chartValues.values.ingress.metadata.annotations }}
+              - name: "{{$annobj.name}}"
+                  {{ if contains ".helmfile" $annobj.value }}
+                value: "{{ tpl $annobj.value $helmfileVarsDict }}"
+                  {{ else }}
+                value: "{{$annobj.value}}"
+                  {{ end }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+
 
         {{ end }}
+
 
         conduits:
           contexts:

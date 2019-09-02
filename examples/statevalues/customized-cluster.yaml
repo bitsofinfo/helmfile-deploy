@@ -6,6 +6,8 @@ clusters:
 
   minikube:
 
+    name: "minikube"
+
     # Here we supplement some info:
     ingressControllers:
 
