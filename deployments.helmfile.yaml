@@ -249,24 +249,14 @@ releases:
           metadata:
             {{ if hasKey $chartConfigs.appdeploy.chartValues.values.ingress.metadata "labels" }}
             labels:
-              {{ range $lblobj := $chartConfigs.appdeploy.chartValues.values.ingress.metadata.labels }}
-              - name: "{{$lblobj.name}}"
-                  {{ if contains ".helmfile" $lblobj.value }}
-                value: "{{ tpl $lblobj.value $helmfileVarsDict }}"
-                  {{ else }}
-                value: "{{$lblobj.value}}"
-                  {{ end }}
+              {{ range $labelName,$labelValue := $chartConfigs.appdeploy.chartValues.values.ingress.metadata.labels }}
+              "{{$labelName}}": "{{ contains ".helmfile" $labelValue | ternary (tpl $labelValue $helmfileVarsDict) $labelValue }}"
               {{ end }}
             {{ end }}
             {{ if hasKey $chartConfigs.appdeploy.chartValues.values.ingress.metadata "annotations" }}
             annotations:
-              {{ range $annobj := $chartConfigs.appdeploy.chartValues.values.ingress.metadata.annotations }}
-              - name: "{{$annobj.name}}"
-                  {{ if contains ".helmfile" $annobj.value }}
-                value: "{{ tpl $annobj.value $helmfileVarsDict }}"
-                  {{ else }}
-                value: "{{$annobj.value}}"
-                  {{ end }}
+              {{ range $annotationName,$annotationValue := $chartConfigs.appdeploy.chartValues.values.ingress.metadata.annotations }}
+              "{{$annotationName}}": "{{ contains ".helmfile" $annotationValue | ternary (tpl $annotationValue $helmfileVarsDict) $annotationValue }}"
               {{ end }}
             {{ end }}
           {{ end }}
