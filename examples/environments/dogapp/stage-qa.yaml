@@ -20,6 +20,9 @@ environments:
     contexts:
       stage-qa:
 
+        # IMPORTANT! services with installed:true should
+        # ALWAYS be listed FIRST to avoid downtime assuming
+        # you run deployments.helmfile.yaml BEFORE conduits.helmfile.yaml
         services:
           - name: "current"
             version: "3.0.0"
