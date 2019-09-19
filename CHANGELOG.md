@@ -1,3 +1,7 @@
+# 1.0.3
+
+* Upgraded to `appconduits:1.0.12` 
+
 # 1.0.2
 
 * Upgraded to `appdeploy:1.1.10` 
