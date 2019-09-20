@@ -1,3 +1,7 @@
+# 1.0.4
+
+* Fix `conduits.helmfile.yaml` to process annotations/labels for `appconduits:1.0.12` 
+
 # 1.0.3
 
 * Upgraded to `appconduits:1.0.12` 

@@ -272,6 +272,18 @@ releases:
                           {{- $hostName := $host.name | replace "[[#port]]" ($port.port | toString) -}}
                           {{- $hostName := $hostName | replace "-." "." -}}
                         - name: "{{ $hostName }}"
+                          {{ if hasKey $host "annotations" }}
+                          annotations:
+                          {{ range $annotation,$val := $host.annotations }}
+                            {{ $annotation }}: {{ $val }}
+                          {{ end }}
+                          {{ end }}
+                          {{ if hasKey $host "labels" }}
+                          labels:
+                          {{ range $label,$val := $host.labels }}
+                            {{ $label }}: {{ $val }}
+                          {{ end }}
+                          {{ end }}
                           dns: {{ (eq ((getOrNil "dns" $host) | toString) "false") | ternary false true }}
                           {{ if hasKey $host "tls" }}
                           tls:
