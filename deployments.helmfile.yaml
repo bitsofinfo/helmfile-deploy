@@ -102,12 +102,12 @@ releases:
 
   */ -}}
   {{ $chartConfigs := dict }}
-  {{ $chartConfigs := hasKey $stateVals "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($stateVals | getOrNil "chartConfigs")) $chartConfigs }}
-  {{ $chartConfigs := hasKey $targetCluster "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($targetCluster | getOrNil "chartConfigs")) $chartConfigs }}
-  {{ $chartConfigs := hasKey $envVals "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($envVals | getOrNil "chartConfigs")) $chartConfigs }}
-  {{ $chartConfigs := hasKey $currEnvironment "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($currEnvironment | getOrNil "chartConfigs")) $chartConfigs }}
-  {{ $chartConfigs := hasKey $currContext "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($currContext | getOrNil "chartConfigs")) $chartConfigs }}
-  {{ $chartConfigs := hasKey $currService "chartConfigs" | ternary (mergeOverwrite $chartConfigs ($currService | getOrNil "chartConfigs")) $chartConfigs }}
+  {{ $chartConfigs := hasKey $stateVals "chartConfigs" | ternary (deepCopy ((hasKey $stateVals "chartConfigs") | ternary ($stateVals | getOrNil "chartConfigs") dict) | mergeOverwrite $chartConfigs) $chartConfigs }}
+  {{ $chartConfigs := hasKey $targetCluster "chartConfigs" | ternary (deepCopy ((hasKey $targetCluster "chartConfigs") | ternary ($targetCluster | getOrNil "chartConfigs") dict) | mergeOverwrite $chartConfigs) $chartConfigs }}
+  {{ $chartConfigs := hasKey $envVals "chartConfigs" | ternary (deepCopy ((hasKey $envVals "chartConfigs") | ternary ($envVals | getOrNil "chartConfigs") dict) | mergeOverwrite $chartConfigs) $chartConfigs }}
+  {{ $chartConfigs := hasKey $currEnvironment "chartConfigs" | ternary (deepCopy ((hasKey $currEnvironment "chartConfigs") | ternary ($currEnvironment | getOrNil "chartConfigs") dict) | mergeOverwrite $chartConfigs) $chartConfigs }}
+  {{ $chartConfigs := hasKey $currContext "chartConfigs" | ternary (deepCopy ((hasKey $currContext "chartConfigs") | ternary ($currContext | getOrNil "chartConfigs") dict) | mergeOverwrite $chartConfigs) $chartConfigs }}
+  {{ $chartConfigs := hasKey $currService "chartConfigs" | ternary (deepCopy ((hasKey $currService "chartConfigs") | ternary ($currService | getOrNil "chartConfigs") dict) | mergeOverwrite $chartConfigs) $chartConfigs }}
 
   {{- /*
       ---------------------------------------------------------
