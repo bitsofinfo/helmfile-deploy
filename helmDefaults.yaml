@@ -12,7 +12,10 @@ repositories:
 {{- $targetCluster := (pick .Values.clusters .Values.targetCluster) | values | first }}
 
 helmDefaults:
+
+  # this can be overriden per release via --state-values-set forceHelmTillerNamespace=<whatever>
   tillerNamespace: {{ $targetCluster.helmDefaults.tillerNamespace }}
+
   tillerless: {{ $targetCluster.helmDefaults.tillerless }}
   kubeContext: {{ $targetCluster.helmDefaults.kubeContext }}
   verify: false

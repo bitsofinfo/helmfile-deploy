@@ -1,3 +1,7 @@
+# 1.0.6
+
+* Added new helmfile state value `forceHelmTillerNamespace` to permit per-invocation overrides of the default helm `tillerNamespace` as defined in `helmDefaults.yaml`. This can be set via `--state-values-set forceHelmTillerNamespace=<whatever>`. This will result in `tillerNamespace: <whatever>` being defined for each generated release under `releases:` by `[deployments|conduits].helmfile.yaml`
+
 # 1.0.5
 
 * Fix `deployments|conduits.helmfile.yaml` to leverage `deepCopy` to properly permit `chartConfigs` overrides to not mutate global `chartConfigs` and only the current iteration. Requires `helmfile` `v0.86.0+`

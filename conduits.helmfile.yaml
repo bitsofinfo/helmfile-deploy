@@ -120,6 +120,13 @@ releases:
     {{ if hasKey $chartConfigs.appconduits "version" }}
     version: {{ $chartConfigs.appconduits.version }}
     {{ end }}
+
+    {{- /* Permit forced override of the default helm tillerNamespace (defined in helmDefaults.yaml) 
+          (set this via helmfile --state-values-set forceHelmTillerNamespace=[namespace]) */ -}}
+    {{ if hasKey $stateVals "forceHelmTillerNamespace" }}
+    tillerNamespace: {{ $stateVals.forceHelmTillerNamespace }}
+    {{ end }}
+
     values:
 
       {{- /*
