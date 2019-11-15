@@ -1,3 +1,7 @@
+# 1.0.8
+
+* `deployments.helmfile.yaml` fix `version` (`currentService.version`) to have invalid characters replaced w/ dashes `-` see: https://github.com/roboll/helmfile/issues/970
+  
 # 1.0.7
 
 * `deployments.helmfile.yaml` added `version` (`currentService.version`) and `name` (`currentService.name`) as additional helmfile `release` labels:`

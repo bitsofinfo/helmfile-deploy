@@ -177,7 +177,7 @@ releases:
     labels:
       app: {{ $envVals.appname }}
       context: {{ $currContextName }}
-      version: {{ $currService.version }}
+      version: {{ ($currService.version | replace "." "-") }}
       name: {{ $currService.name }}
     namespace: {{ $namespace }}
     chart: {{ $chartConfigs.appdeploy.chart }}
