@@ -1,3 +1,7 @@
+# 1.0.7
+
+* `deployments.helmfile.yaml` added `version` (`currentService.version`) and `name` (`currentService.name`) as additional helmfile `release` labels:`
+
 # 1.0.6
 
 * Added new helmfile state value `forceHelmTillerNamespace` to permit per-invocation overrides of the default helm `tillerNamespace` as defined in `helmDefaults.yaml`. This can be set via `--state-values-set forceHelmTillerNamespace=<whatever>`. This will result in `tillerNamespace: <whatever>` being defined for each generated release under `releases:` by `[deployments|conduits].helmfile.yaml`
