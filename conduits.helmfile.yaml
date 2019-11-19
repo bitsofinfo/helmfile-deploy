@@ -127,6 +127,12 @@ releases:
     tillerNamespace: {{ $stateVals.forceHelmTillerNamespace }}
     {{ end }}
 
+    {{- /* Permit forced override of the default helm timeout (defined in helmDefaults.yaml) 
+          (set this via helmfile --state-values-set forceHelmTimeout=[N seconds]) */ -}}
+    {{ if hasKey $stateVals "forceHelmTimeout" }}
+    timeout: {{ $stateVals.forceHelmTimeout }}
+    {{ end }}
+    
     values:
 
       {{- /*

@@ -13,13 +13,15 @@ repositories:
 
 helmDefaults:
 
-  # this can be overriden per release via --state-values-set forceHelmTillerNamespace=<whatever>
+  # this can be overriden per invocation via --state-values-set forceHelmTillerNamespace=<whatever>
   tillerNamespace: {{ $targetCluster.helmDefaults.tillerNamespace }}
 
   tillerless: {{ $targetCluster.helmDefaults.tillerless }}
   kubeContext: {{ $targetCluster.helmDefaults.kubeContext }}
   verify: false
   wait: {{ $targetCluster.helmDefaults.wait }}
+
+  # this can be overriden per invocation via --state-values-set forceHelmTimeout=<N seconds> 
   timeout: 900
   recreatePods: false
   force: true

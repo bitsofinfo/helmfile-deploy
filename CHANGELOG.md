@@ -1,4 +1,9 @@
-# 1.0.8
+# 1.0.9
+
+* Upgraded to `appdeploy:1.1.11` 
+* Added option for per-invocation override for: `--state-values-set forceHelmTimeout=[N seconds]`
+  
+* # 1.0.8
 
 * `deployments.helmfile.yaml` fix `version` (`currentService.version`) to have invalid characters replaced w/ dashes `-` see: https://github.com/roboll/helmfile/issues/970
   
