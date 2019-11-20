@@ -1,3 +1,7 @@
+# 1.0.10
+
+* Upgraded to `appdeploy:1.1.12` 
+  
 # 1.0.9
 
 * Upgraded to `appdeploy:1.1.11` 
