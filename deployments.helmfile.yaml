@@ -116,7 +116,7 @@ releases:
       [envVals.appname]-[environment.context]-[currEnvironment.service.version]-[envVals.classifier]
       ---------------------------------------------------------
   */ -}}
-  {{- $releaseIdentifier := printf "%s-%s-%s-%s" $envVals.appname $currContextName ($currService.version | replace "." "-") (hasKey $envVals "classifier" | ternary ($envVals | getOrNil "classifier") "NOCLASSIFIER") }}
+  {{- $releaseIdentifier := printf "%s-%s-%s-%s" (hasKey $envVals "releaseBaseName" | ternary ($envVals | getOrNil "releaseBaseName") $envVals.appname) $currContextName ($currService.version | replace "." "-") (hasKey $envVals "classifier" | ternary ($envVals | getOrNil "classifier") "NOCLASSIFIER") }}
   {{- $releaseIdentifier := $releaseIdentifier | replace "-NOCLASSIFIER" "" -}}
   {{- $releaseIdentifier := $releaseIdentifier | replace "NOCLASSIFIER" "" -}}
   {{- $releaseIdentifier := $releaseIdentifier | replace "-%!s(<nil>)" "" }}

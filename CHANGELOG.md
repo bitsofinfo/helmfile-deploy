@@ -1,3 +1,8 @@
+# 1.0.11
+
+* Upgraded to `appdeploy:1.1.13` 
+* Added support for `releaseBaseName` in environment context files, which will be used in preference to `appname` if present when generating each `helmfile` `release.name`
+
 # 1.0.10
 
 * Upgraded to `appdeploy:1.1.12` 

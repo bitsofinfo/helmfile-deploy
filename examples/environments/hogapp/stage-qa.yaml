@@ -1,5 +1,13 @@
 appname: hogapp
 
+# Optional: if present, this will be used instead of 'appname' above
+# when generating the helmfile `release` name.
+#releaseBaseName: happ
+
+# Optional: if present, will be appended to the helmfile 'release' name
+# as well as set as the 'classifier' value for appconduit/appdeploy charts
+#classifier: whatever
+
 #
 # the "ports" section
 #

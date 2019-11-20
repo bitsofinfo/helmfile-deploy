@@ -89,7 +89,7 @@ releases:
       [envVals.appname]-[currContextName][-[classifier]]
       ---------------------------------------------------------
   */ -}}
-  {{- $conduitName := printf "%s-%s-%sREMOVEME-conduits" $envVals.appname $currContextName $classifier }}
+  {{- $conduitName := printf "%s-%s-%sREMOVEME-conduits" (hasKey $envVals "releaseBaseName" | ternary ($envVals | getOrNil "releaseBaseName") $envVals.appname) $currContextName $classifier }}
 
   {{- /*
   this is annoying, due to lack of reliable ternary operators and nested IF garbage
