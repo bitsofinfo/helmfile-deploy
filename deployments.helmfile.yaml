@@ -332,8 +332,11 @@ releases:
             {{ range $currHookName,$currHook := $chartConfigs.appdeploy.chartValues.values.hooks.custom }}
 
             {{ $currHookName }}:
+              {{ if hasKey $currHook.values "enabled" }}
               enabled: {{ $currHook.values.enabled }}
+              {{ end }}
 
+              {{ if hasKey $currHook.values "variables" }}
               variables:
                 {{ range $name,$value := $currHook.values.variables }}
                   {{ if contains ".helmfile" $value }}
@@ -342,7 +345,8 @@ releases:
                 {{ $name }}: {{ $value }}
                   {{ end }}
                 {{ end }}
-
+              {{ end }}
+              
               {{- /*
                   ---------------------------------------------------------
                   Each custom hook's optional "bootstrapSecret" value

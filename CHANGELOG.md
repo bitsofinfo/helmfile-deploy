@@ -1,3 +1,7 @@
+# 1.0.12
+
+* If `hooks.custom.[n]` blocks are declared in `chartconfigs.yaml` under `chartConfigs.appdeploy.chartValues.values` no longer assume the existance of the `enabled` and or `variables` sub-keys.
+  
 # 1.0.11
 
 * Upgraded to `appdeploy:1.1.13` 
