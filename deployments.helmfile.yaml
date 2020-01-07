@@ -333,23 +333,27 @@ releases:
 
             {{ $currHookName }}:
 
-              {{ if hasKey $currHook "values" }}
+              {{ if not (empty $currHook) }}
+              
+                {{ if hasKey $currHook "values" }}
 
-                {{ if hasKey $currHook.values "enabled" }}
-                enabled: {{ $currHook.values.enabled }}
-                {{ end }}
+                  {{ if hasKey $currHook.values "enabled" }}
+                  enabled: {{ $currHook.values.enabled }}
+                  {{ end }}
 
-                {{ if hasKey $currHook.values "variables" }}
-                variables:
-                  {{ range $name,$value := $currHook.values.variables }}
-                    {{ if contains ".helmfile" $value }}
-                  {{ $name }}: {{ tpl $value $helmfileVarsDict }}
-                  {{ else }}
-                  {{ $name }}: {{ $value }}
+                  {{ if hasKey $currHook.values "variables" }}
+                  variables:
+                    {{ range $name,$value := $currHook.values.variables }}
+                      {{ if contains ".helmfile" $value }}
+                    {{ $name }}: {{ tpl $value $helmfileVarsDict }}
+                    {{ else }}
+                    {{ $name }}: {{ $value }}
+                      {{ end }}
                     {{ end }}
                   {{ end }}
+
                 {{ end }}
-                
+
               {{ end }}
 
               {{- /*
