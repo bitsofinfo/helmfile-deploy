@@ -334,26 +334,21 @@ releases:
             {{ $currHookName }}:
 
               {{ if not (empty $currHook) }}
-              
-                {{ if hasKey $currHook "values" }}
+              {{ if hasKey $currHook "values" }}
 
-                  {{ if hasKey $currHook.values "enabled" }}
-                  enabled: {{ $currHook.values.enabled }}
+              {{ if hasKey $currHook.values "enabled" }}
+              enabled: {{ $currHook.values.enabled }}
+              {{ end }}
+
+              {{ if hasKey $currHook.values "variables" }}
+              variables:
+                {{ range $name,$value := $currHook.values.variables }}
+                  {{ if contains ".helmfile" $value }}
+                {{ $name }}: {{ tpl $value $helmfileVarsDict }}
+                {{ else }}
+                {{ $name }}: {{ $value }}
                   {{ end }}
-
-                  {{ if hasKey $currHook.values "variables" }}
-                  variables:
-                    {{ range $name,$value := $currHook.values.variables }}
-                      {{ if contains ".helmfile" $value }}
-                    {{ $name }}: {{ tpl $value $helmfileVarsDict }}
-                    {{ else }}
-                    {{ $name }}: {{ $value }}
-                      {{ end }}
-                    {{ end }}
-                  {{ end }}
-
                 {{ end }}
-
               {{ end }}
 
               {{- /*
@@ -381,10 +376,12 @@ releases:
                   {{ else }}
                   secretValue: "NO_SECRET_VALUE2"
                   {{ end }}
-            {{ end }}
-          {{ end }}
-        {{ end }}
 
+              {{ end }} {{- /* END: if not (empty $currHook) */ -}}
+              {{ end }} {{- /* END: if hasKey $currHook "values" */ -}}
+            {{ end }} {{- /* END: range $currHookName,$currHook := ..... */ -}}
+          {{ end }} {{- /* END: if hasKey $chartConfigs.appdeploy.chartValues.values.hooks "custom"... */ -}}
+        {{ end }} {{- /* END: if hasKey $chartConfigs.appdeploy.chartValues.values "hooks" */ -}}
 
   {{ end }}   {{- /* END: range $currService := $currContext.services */ -}}
   {{ end }}   {{- /* END: if not has $currService.version $versionsReleased */ -}}
