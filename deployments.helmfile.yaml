@@ -351,6 +351,9 @@ releases:
                 {{ end }}
               {{ end }}
 
+              {{ end }} {{- /* END: if not (empty $currHook) */ -}}
+              {{ end }} {{- /* END: if hasKey $currHook "values" */ -}}
+              
               {{- /*
                   ---------------------------------------------------------
                   Each custom hook's optional "bootstrapSecret" value
@@ -377,8 +380,6 @@ releases:
                   secretValue: "NO_SECRET_VALUE2"
                   {{ end }}
 
-              {{ end }} {{- /* END: if not (empty $currHook) */ -}}
-              {{ end }} {{- /* END: if hasKey $currHook "values" */ -}}
             {{ end }} {{- /* END: range $currHookName,$currHook := ..... */ -}}
           {{ end }} {{- /* END: if hasKey $chartConfigs.appdeploy.chartValues.values.hooks "custom"... */ -}}
         {{ end }} {{- /* END: if hasKey $chartConfigs.appdeploy.chartValues.values "hooks" */ -}}
