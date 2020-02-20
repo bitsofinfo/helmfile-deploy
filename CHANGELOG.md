@@ -2,7 +2,7 @@
 
 * Upgraded to `appdeploy:1.1.16` 
   
-* # 1.0.14
+# 1.0.14
 
 DO NOT USE. BROKEN
 
