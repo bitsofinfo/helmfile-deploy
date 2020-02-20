@@ -1,4 +1,10 @@
+# 1.0.16
+
+* Upgraded to `appdeploy:1.1.17` 
+  
 # 1.0.15
+
+DO NOT USE. BROKEN
 
 * Upgraded to `appdeploy:1.1.16` 
   
