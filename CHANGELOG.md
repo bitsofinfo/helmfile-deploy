@@ -12,7 +12,7 @@ DO NOT USE. BROKEN
 
 * Upgraded to `appdeploy:1.1.14` 
   
-  # 1.0.12
+# 1.0.12
 
 * If `hooks.custom.[n]` blocks are declared in `chartconfigs.yaml` under `chartConfigs.appdeploy.chartValues.values` no longer assume the existance of the `enabled` and or `variables` sub-keys.
   
@@ -30,7 +30,7 @@ DO NOT USE. BROKEN
 * Upgraded to `appdeploy:1.1.11` 
 * Added option for per-invocation override for: `--state-values-set forceHelmTimeout=[N seconds]`
   
-* # 1.0.8
+# 1.0.8
 
 * `deployments.helmfile.yaml` fix `version` (`currentService.version`) to have invalid characters replaced w/ dashes `-` see: https://github.com/roboll/helmfile/issues/970
   
