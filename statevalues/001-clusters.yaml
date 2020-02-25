@@ -30,6 +30,10 @@ clusters:
       kubeContext: minikube
       wait: true
       tillerless: false
+      force: true
+      verify: false
+      recreatePods: false
+
 
     # You can also customize "chartConfigs" (i.e. values and baseValues)
     # etc by defining a chartConfigs element here which will let you

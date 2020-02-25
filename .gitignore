@@ -1,3 +1,5 @@
 helmfile
 custom-configs/*
 !custom-configs/README.md
+.DS_Store
+x.txt

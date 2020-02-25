@@ -18,13 +18,13 @@ helmDefaults:
 
   tillerless: {{ $targetCluster.helmDefaults.tillerless }}
   kubeContext: {{ $targetCluster.helmDefaults.kubeContext }}
-  verify: false
+  verify: {{ $targetCluster.helmDefaults.verify }}
   wait: {{ $targetCluster.helmDefaults.wait }}
 
   # this can be overriden per invocation via --state-values-set forceHelmTimeout=<N seconds> 
   timeout: 900
-  recreatePods: false
-  force: true
+  recreatePods: {{ $targetCluster.helmDefaults.recreatePods }}
+  force: {{ $targetCluster.helmDefaults.force }}   # helm3? https://github.com/roboll/helmfile/issues/1000#issuecomment-590619540
 
   # https://github.com/roboll/helmfile/issues/686
   {{/* if and .Values.helm .Values.helm.dryRun */}}
