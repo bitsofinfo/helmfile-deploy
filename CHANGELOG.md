@@ -1,3 +1,7 @@
+# 1.0.16
+
+* Upgraded to `appdeploy:1.1.16` 
+
 # 1.0.15
 
 * Change `helmDefaults.yaml` to use `targetCluster` variables for `verify, force, recreatePods`
