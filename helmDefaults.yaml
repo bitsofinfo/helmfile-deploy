@@ -26,6 +26,11 @@ helmDefaults:
   recreatePods: {{ $targetCluster.helmDefaults.recreatePods }}
   force: {{ $targetCluster.helmDefaults.force }}   # helm3? https://github.com/roboll/helmfile/issues/1000#issuecomment-590619540
 
+  # https://github.com/roboll/helmfile/issues/891
+  # https://github.com/helm/helm/pull/7648
+  # this can be overriden per invocation via --state-values-set forceHelmCreateNamespace=<true|false>
+  createNamespace: {{ $targetCluster.helmDefaults.createNamespace }} # if this is NOT present, helmfiles default is true...
+
   # https://github.com/roboll/helmfile/issues/686
   {{/* if and .Values.helm .Values.helm.dryRun */}}
   #args:

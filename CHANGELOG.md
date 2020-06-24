@@ -1,3 +1,7 @@
+# 1.0.17
+
+* Add support for toggling helmfile's `helmDefaults.createNamespace: true|false` per `statevalues/[cluster].yaml` failes. Relevant for helm 3.2+, you can force this and override cluster settings via `--state-values-set forceHelmCreateNamespace=<true|false>`
+ 
 # 1.0.16
 
 * Upgraded to `appdeploy:1.1.16` 

@@ -132,6 +132,12 @@ releases:
     {{ if hasKey $stateVals "forceHelmTimeout" }}
     timeout: {{ $stateVals.forceHelmTimeout }}
     {{ end }}
+
+    {{- /* Permit forced override of the default helm 3.2+ create-namespace behavior (defined in helmDefaults.yaml) 
+          (set this via helmfile --state-values-set forceHelmCreateNamespace=[true|false]) */ -}}
+    {{ if hasKey $stateVals "forceHelmCreateNamespace" }}
+    createNamespace: {{ $stateVals.forceHelmCreateNamespace }}
+    {{ end }}
     
     values:
 

@@ -33,6 +33,7 @@ clusters:
       force: true
       verify: false
       recreatePods: false
+      createNamespace: true
 
 
     # You can also customize "chartConfigs" (i.e. values and baseValues)

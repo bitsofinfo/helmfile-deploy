@@ -87,7 +87,7 @@ Note: before you try your own custom configuration its highly recommended that [
 
 Pre-requisites:
 
-1. have the latest [helm](https://helm.sh/) installed
+1. have the latest [helm](https://helm.sh/) installed 
 1. have the latest [helmfile](https://github.com/roboll/helmfile) installed **>= 0.80.2**
 1. have the latest [helmfile-diff](https://github.com/databus23/helm-diff) plugin installed
 
