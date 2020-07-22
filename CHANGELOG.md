@@ -1,3 +1,7 @@
+# 1.0.18
+
+* Support for `appdeploy:1.2.0` autoscaling: https://github.com/bitsofinfo/helmfile-deploy/pull/1
+
 # 1.0.17
 
 * Add support for toggling helmfile's `helmDefaults.createNamespace: true|false` per `statevalues/[cluster].yaml` failes. Relevant for helm 3.2+, you can force this and override cluster settings via `--state-values-set forceHelmCreateNamespace=<true|false>`
