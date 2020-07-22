@@ -191,19 +191,19 @@ releases:
     installed: false
     {{ end }}
 
-    {{- /* Permit forced override of the default helm tillerNamespace (defined in helmDefaults.yaml) 
+    {{- /* Permit forced override of the default helm tillerNamespace (defined in helmDefaults.yaml)
           (set this via helmfile --state-values-set forceHelmTillerNamespace=[namespace]) */ -}}
     {{ if hasKey $stateVals "forceHelmTillerNamespace" }}
     tillerNamespace: {{ $stateVals.forceHelmTillerNamespace }}
     {{ end }}
 
-    {{- /* Permit forced override of the default helm timeout (defined in helmDefaults.yaml) 
+    {{- /* Permit forced override of the default helm timeout (defined in helmDefaults.yaml)
           (set this via helmfile --state-values-set forceHelmTimeout=[N seconds]) */ -}}
     {{ if hasKey $stateVals "forceHelmTimeout" }}
     timeout: {{ $stateVals.forceHelmTimeout }}
     {{ end }}
 
-    {{- /* Permit forced override of the default helm 3.2+ create-namespace behavior (defined in helmDefaults.yaml) 
+    {{- /* Permit forced override of the default helm 3.2+ create-namespace behavior (defined in helmDefaults.yaml)
           (set this via helmfile --state-values-set forceHelmCreateNamespace=[true|false]) */ -}}
     {{ if hasKey $stateVals "forceHelmCreateNamespace" }}
     createNamespace: {{ $stateVals.forceHelmCreateNamespace }}
@@ -287,6 +287,11 @@ releases:
 {{ toYaml $chartConfigs.appdeploy.chartValues.values.healthcheck | indent 12 }}
         {{ end }}
 
+{{ if hasKey $chartConfigs.appdeploy.chartValues.values "autoscaling" }}
+        autoscaling:
+{{ toYaml $chartConfigs.appdeploy.chartValues.values.autoscaling | indent 12 }}
+        {{ end }}
+
         bootstrapSecret:
           k8Secret:
             secretValue: "{{ $bootstrapSecretValue }}"
@@ -359,7 +364,7 @@ releases:
 
               {{ end }} {{- /* END: if not (empty $currHook) */ -}}
               {{ end }} {{- /* END: if hasKey $currHook "values" */ -}}
-              
+
               {{- /*
                   ---------------------------------------------------------
                   Each custom hook's optional "bootstrapSecret" value
