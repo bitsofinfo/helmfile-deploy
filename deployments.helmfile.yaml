@@ -287,9 +287,19 @@ releases:
 {{ toYaml $chartConfigs.appdeploy.chartValues.values.healthcheck | indent 12 }}
         {{ end }}
 
-{{ if hasKey $chartConfigs.appdeploy.chartValues.values "autoscaling" }}
+        {{ if hasKey $chartConfigs.appdeploy.chartValues.values "resources" }}
+        resources:
+{{ toYaml $chartConfigs.appdeploy.chartValues.values.resources | indent 12 }}
+        {{ end }}
+
+        {{ if hasKey $chartConfigs.appdeploy.chartValues.values "autoscaling" }}
         autoscaling:
 {{ toYaml $chartConfigs.appdeploy.chartValues.values.autoscaling | indent 12 }}
+        {{ end }}
+
+        {{ if hasKey $chartConfigs.appdeploy.chartValues.values "disruptionBudget" }}
+        disruptionBudget:
+{{ toYaml $chartConfigs.appdeploy.chartValues.values.disruptionBudget | indent 12 }}
         {{ end }}
 
         bootstrapSecret:
