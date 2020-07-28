@@ -1,3 +1,7 @@
+# 1.0.19
+
+* Support for `appdeploy:1.3.0` pod disruption budgets: https://github.com/bitsofinfo/helmfile-deploy/pull/2
+
 # 1.0.18
 
 * Support for `appdeploy:1.2.0` autoscaling: https://github.com/bitsofinfo/helmfile-deploy/pull/1
