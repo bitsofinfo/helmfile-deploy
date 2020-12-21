@@ -1,3 +1,6 @@
+# 1.0.20
+
+* Update `helmDefaults.yaml` for new `stable` chart location
 # 1.0.19
 
 * Support for `appdeploy:1.3.0` pod disruption budgets: https://github.com/bitsofinfo/helmfile-deploy/pull/2
