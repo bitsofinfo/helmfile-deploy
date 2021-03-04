@@ -1,3 +1,6 @@
+# 1.1.0
+* Upgraded to `appdeploy:1.4.2` 
+* Upgraded to `appconduits:1.1.1` 
 # 1.0.20
 
 * Update `helmDefaults.yaml` for new `stable` chart location
