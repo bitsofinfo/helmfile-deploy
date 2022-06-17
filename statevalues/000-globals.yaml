@@ -85,7 +85,7 @@ chartConfigs:
 
   appdeploy:
     chart: bitsofinfo-appdeploy/appdeploy
-    version: 1.4.2
+    version: 1.4.3
     #
     # Further chart values customization:
     #
