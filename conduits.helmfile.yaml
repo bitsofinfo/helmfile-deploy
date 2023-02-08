@@ -318,6 +318,9 @@ releases:
                         - "{{ $path }}"
                         {{ end }}
                       {{ end }}
+                      {{ if hasKey $mapping "pathType" }}
+                      pathType: {{ $mapping.pathType }}
+                      {{ end }}
                       serviceBindings:
                         {{ range $serviceName,$percentage := $mapping.serviceBindings }}
                           {{- $serviceName := printf "REMOVEME%s-%s-%d" $classifier $serviceName $port.port }}
