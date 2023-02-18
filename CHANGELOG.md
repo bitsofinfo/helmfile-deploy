@@ -1,13 +1,20 @@
+# 1.4.0
+* Upgraded to `appdeploy:1.4.6`
+* Upgraded to `appconduits:1.1.3`
+
 # 1.3.0
 * Upgraded to `appconduits:1.1.2`
+
 # 1.2.0
-* Upgraded to `appdeploy:1.4.3` 
+* Upgraded to `appdeploy:1.4.3`
+
 # 1.1.0
 * Upgraded to `appdeploy:1.4.2` 
 * Upgraded to `appconduits:1.1.1` 
-# 1.0.20
 
+# 1.0.20
 * Update `helmDefaults.yaml` for new `stable` chart location
+
 # 1.0.19
 
 * Support for `appdeploy:1.3.0` pod disruption budgets: https://github.com/bitsofinfo/helmfile-deploy/pull/2
