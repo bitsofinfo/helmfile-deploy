@@ -1,3 +1,7 @@
+# 1.4.1
+* Upgraded to `appdeploy:1.4.7` (minor update)
+* Upgraded to `appconduits:1.1.4` (minor update)
+
 # 1.4.0
 * Upgraded to `appdeploy:1.4.6`
 * Upgraded to `appconduits:1.1.3`
