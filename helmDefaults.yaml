@@ -13,10 +13,6 @@ repositories:
 
 helmDefaults:
 
-  # this can be overriden per invocation via --state-values-set forceHelmTillerNamespace=<whatever>
-  tillerNamespace: {{ $targetCluster.helmDefaults.tillerNamespace }}
-
-  tillerless: {{ $targetCluster.helmDefaults.tillerless }}
   kubeContext: {{ $targetCluster.helmDefaults.kubeContext }}
   verify: {{ $targetCluster.helmDefaults.verify }}
   wait: {{ $targetCluster.helmDefaults.wait }}
