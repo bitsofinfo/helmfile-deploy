@@ -191,12 +191,6 @@ releases:
     installed: false
     {{ end }}
 
-    {{- /* Permit forced override of the default helm tillerNamespace (defined in helmDefaults.yaml)
-          (set this via helmfile --state-values-set forceHelmTillerNamespace=[namespace]) */ -}}
-    {{ if hasKey $stateVals "forceHelmTillerNamespace" }}
-    tillerNamespace: {{ $stateVals.forceHelmTillerNamespace }}
-    {{ end }}
-
     {{- /* Permit forced override of the default helm timeout (defined in helmDefaults.yaml)
           (set this via helmfile --state-values-set forceHelmTimeout=[N seconds]) */ -}}
     {{ if hasKey $stateVals "forceHelmTimeout" }}
