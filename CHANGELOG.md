@@ -1,3 +1,7 @@
+# 2.0.0
+* *Breaking*: dropped support for Helm 2
+* `helmDefaults.tillerNamespace` and `helmDefaults.tillerless` removed
+
 # 1.4.2
 * Upgraded to `appdeploy:1.4.8`
 
