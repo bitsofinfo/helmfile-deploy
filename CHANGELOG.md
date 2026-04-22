@@ -1,3 +1,8 @@
+# 2.1.0
+* Add support for defining ingressClassName per mapping
+* Upgrade to `appdeploy:1.5.0`
+* Upgrade to `appconduits:1.2.1`
+
 # 2.0.0
 * *Breaking*: dropped support for Helm 2
 * `helmDefaults.tillerNamespace` and `helmDefaults.tillerless` removed
