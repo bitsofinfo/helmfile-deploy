@@ -280,6 +280,9 @@ releases:
                       {{ range $label, $value := $mapping.labels }}
                         {{ $label }}: "{{ $value }}"
                       {{ end }}
+                      {{ if hasKey $mapping "ingressClassName" }}
+                      ingressClassName: {{ $mapping.ingressClassName }}
+                      {{ end }}
                       hosts:
                         {{ range $host := $mapping.hosts }}
                           {{- $hostName := $host.name | replace "[[#port]]" ($port.port | toString) -}}
